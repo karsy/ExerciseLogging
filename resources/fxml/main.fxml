@@ -1,32 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="320" maxWidth="480" minHeight="320" minWidth="480" prefHeight="320" prefWidth="480" style="-fx-background-color: teal;" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="320" maxWidth="480" minHeight="320" minWidth="480" prefHeight="320" prefWidth="480" style="-fx-background-color: teal;" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="exerciseLogging.mainController">
    <top>
-      <MenuBar BorderPane.alignment="CENTER">
-        <menus>
-          <Menu mnemonicParsing="false" text="File">
-            <items>
-              <MenuItem mnemonicParsing="false" text="Close" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Edit">
-            <items>
-              <MenuItem mnemonicParsing="false" text="Delete" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Help">
-            <items>
-              <MenuItem mnemonicParsing="false" text="About" />
-            </items>
-          </Menu>
-        </menus>
-      </MenuBar>
    </top>
-    <center>
-        <fx:include fx:id="mainMenu" source="centerView.fxml"/>
-    </center>
+   <top>
+      <TabPane minWidth="480.0" prefHeight="320.0" prefWidth="480.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+        <tabs>
+            <Tab text="Log">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: green;">
+                     <children>
+                        <GridPane alignment="CENTER" layoutX="68.0" layoutY="7.0" prefHeight="240.0" prefWidth="345.0">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="179.0" minWidth="10.0" prefWidth="148.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="267.0" minWidth="10.0" prefWidth="197.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <DatePicker prefHeight="25.0" prefWidth="112.0" GridPane.columnIndex="1" />
+                              <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                 <children>
+                                    <Spinner nodeOrientation="RIGHT_TO_LEFT" />
+                                    <Text strokeType="OUTSIDE" strokeWidth="0.0" text=":">
+                                       <font>
+                                          <Font size="18.0" />
+                                       </font>
+                                    </Text>
+                                    <Spinner />
+                                 </children>
+                              </HBox>
+                              <Spinner prefHeight="25.0" prefWidth="110.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <TextArea prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Date:" />
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Time:" GridPane.rowIndex="1" />
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Duration" GridPane.rowIndex="2" />
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Shape" GridPane.rowIndex="3" />
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Performance" GridPane.rowIndex="4" />
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Notes to self:" GridPane.rowIndex="5" />
+                              <Spinner prefHeight="25.0" prefWidth="110.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                              <Spinner prefHeight="25.0" prefWidth="110.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                           </children>
+                        </GridPane>
+                        <Button layoutX="197.0" layoutY="265.0" mnemonicParsing="false" text="Log Workout" />
+                     </children></AnchorPane>
+              </content>
+            </Tab>
+          <Tab text="Templates">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="70.0" prefWidth="480.0" style="-fx-background-color: blue;" />
+            </content>
+          </Tab>
+          <Tab text="Exercises">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: red;" />
+            </content>
+          </Tab>
+            <Tab text="History">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: pink;" />
+              </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+   </top>
 </BorderPane>
