@@ -59,6 +59,7 @@ crashlytics-build.properties
 fabric.properties
 
 # Custom
-database/
+/database/
 .idea/
 derby.log
+.DS_Store
