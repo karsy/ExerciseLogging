@@ -1,5 +1,6 @@
 package exerciseLogging;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableArray;
 import javafx.collections.ObservableList;
@@ -9,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
+import javafx.stage.StageStyle;
 
 
 public class mainController{
@@ -44,11 +46,18 @@ public class mainController{
         historyLoggedListView.getSelectionModel().selectedItemProperty().addListener((observable -> {
             // TODO: make this alert get the appropriate information from selected workout/exercise.
             Alert workoutAlert = new Alert(Alert.AlertType.INFORMATION);
+            workoutAlert.initStyle(StageStyle.UTILITY);
             workoutAlert.setGraphic(null);
             workoutAlert.setTitle("Workout title");
             workoutAlert.setHeaderText("Workout on date: 1234567");
             workoutAlert.setContentText("*All the fucking data from this workout that we want to display.*");
             workoutAlert.showAndWait();
+
+            // handles a weird listView-related IndexOutOfBoundsException.
+            Platform.runLater(() -> {
+                historyLoggedListView.getSelectionModel().clearSelection();
+            });
+
         }));
     }
 
