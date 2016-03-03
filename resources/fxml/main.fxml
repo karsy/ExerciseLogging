@@ -126,10 +126,10 @@
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: pink;">
                      <children>
-                        <ListView layoutX="17.0" layoutY="46.0" prefHeight="200.0" prefWidth="200.0" />
-                        <RadioButton layoutX="24.0" layoutY="14.0" mnemonicParsing="false" selected="true" text="by workout" />
-                        <RadioButton layoutX="117.0" layoutY="14.0" mnemonicParsing="false" text="by exercise" />
-                        <ListView layoutX="240.0" layoutY="46.0" prefHeight="200.0" prefWidth="200.0" />
+                        <ListView fx:id="historySelectListView" layoutX="17.0" layoutY="46.0" prefHeight="200.0" prefWidth="200.0"/>
+                        <RadioButton fx:id="historyByWorkoutRadioButton" layoutX="24.0" layoutY="14.0" mnemonicParsing="false" onAction="#historyByWorkout" selected="true" text="by workout" />
+                        <RadioButton fx:id="historyByExerciseRadioButton" layoutX="117.0" layoutY="14.0" mnemonicParsing="false" onAction="#historyByExercise" text="by exercise" />
+                        <ListView fx:id="historyLoggedListView" layoutX="240.0" layoutY="46.0" prefHeight="200.0" prefWidth="200.0" />
                      </children></AnchorPane>
               </content>
             </Tab>
