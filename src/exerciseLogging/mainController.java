@@ -30,11 +30,7 @@ public class mainController{
 
 
         historySelectListView.getSelectionModel().selectionModeProperty().addListener((observable -> {
-            // historyLoggedListView.setItems(observable.getLoggedWorkouts());
             // TODO: make a class for all objects to get their logged workouts or implement the above method with JDBC?
-            historyLoggedListView.getItems().clear();
-            System.out.println(observable.toString());
-            historyLoggedListView.getItems().add(observable);
         }));
     }
 
@@ -53,8 +49,10 @@ public class mainController{
         // TODO: change items in historyLoggedListView according to selection from historySelectListView
         if(historyByWorkout){
             System.out.println("DISPLAYING LOGGED WORKOUTS BY WORKOUT");
+            historyByWorkout();
         } else {
             System.out.println("DISPLAYING LOGGED WORKOUTS BY EXERCISE");
+            historyByExercise();
         }
     }
 
