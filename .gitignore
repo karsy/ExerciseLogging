@@ -1,7 +1,5 @@
 *.class
 
-.idea
-
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
@@ -63,3 +61,4 @@ fabric.properties
 .idea/
 derby.log
 .DS_Store
+*.iml
