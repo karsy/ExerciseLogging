@@ -21,7 +21,7 @@ public class ExerciseLogging extends Application{
             e.printStackTrace();
         }
         Scene scene = new Scene(root);
-        primaryStage.setHeight(320);
+        primaryStage.setHeight(340);
         primaryStage.setWidth(480);
         primaryStage.setResizable(false);
         primaryStage.setScene(scene);
