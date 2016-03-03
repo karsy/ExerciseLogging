@@ -91,34 +91,34 @@
                            <children>
                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Subcategory:" />
                               <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Category:" GridPane.columnIndex="1" />
-                              <ComboBox prefWidth="150.0" GridPane.rowIndex="1" />
-                              <ComboBox prefHeight="25.0" prefWidth="162.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                              <ComboBox fx:id="subCategoryComboBox" onAction="#changeExerciseSubCategory" prefWidth="150.0" GridPane.rowIndex="1" />
+                              <ComboBox fx:id="categoryComboBox" onAction="#changeExerciseCategory" prefHeight="25.0" prefWidth="162.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                               <HBox prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="2">
                                  <children>
-                                    <TextField prefHeight="25.0" prefWidth="113.0" />
-                                    <Button mnemonicParsing="false" style="-fx-background-color: green;" text="+" textFill="WHITE" />
+                                    <TextField fx:id="subCategoryTextField" prefHeight="25.0" prefWidth="113.0" />
+                                    <Button fx:id="addSubCategoryButton" mnemonicParsing="false" onAction="#addSubCategory" style="-fx-background-color: green;" text="+" textFill="WHITE" />
                                  </children>
                               </HBox>
                               <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                  <children>
-                                    <TextField prefHeight="25.0" prefWidth="104.0" />
-                                    <Button mnemonicParsing="false" style="-fx-background-color: green;" text="+" textFill="WHITE" />
+                                    <TextField fx:id="categoryTextField" prefHeight="25.0" prefWidth="104.0" />
+                                    <Button fx:id="addCategoryButton" mnemonicParsing="false" onAction="#addCategory" style="-fx-background-color: green;" text="+" textFill="WHITE" />
                                  </children>
                               </HBox>
                            </children>
                         </GridPane>
-                        <ListView layoutX="8.0" layoutY="46.0" prefHeight="200.0" prefWidth="191.0" />
+                        <ListView fx:id="exercisesListView" layoutX="8.0" layoutY="46.0" prefHeight="200.0" prefWidth="191.0" />
                         <Text layoutX="74.0" layoutY="42.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Exercises:" />
-                        <TextArea layoutX="317.0" layoutY="164.0" prefHeight="118.0" prefWidth="149.0" />
-                        <TextField layoutX="317.0" layoutY="133.0" />
+                        <TextArea fx:id="exerciseDescriptionTextArea" layoutX="317.0" layoutY="164.0" prefHeight="118.0" prefWidth="149.0" />
+                        <TextField fx:id="exerciseNameTextField" layoutX="317.0" layoutY="133.0" />
                         <Text layoutX="273.0" layoutY="151.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Name:" />
                         <Text layoutX="242.0" layoutY="177.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Description:" />
-                        <Button layoutX="237.0" layoutY="192.0" mnemonicParsing="false" prefHeight="73.0" prefWidth="73.0" style="-fx-background-color: green;" text="+" textFill="WHITE">
+                        <Button fx:id="addExerciseButton" onAction="#addExercise" layoutX="237.0" layoutY="192.0" mnemonicParsing="false" prefHeight="73.0" prefWidth="73.0" style="-fx-background-color: green;" text="+" textFill="WHITE">
                            <font>
                               <Font size="35.0" />
                            </font>
                         </Button>
-                        <Button layoutX="76.0" layoutY="252.0" mnemonicParsing="false" text="Goals" />
+                        <Button fx:id="goalsButton" layoutX="76.0" layoutY="252.0" mnemonicParsing="false" onAction="#displayGoals" text="Goals" />
                      </children></AnchorPane>
             </content>
           </Tab>
@@ -126,7 +126,7 @@
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: pink;">
                      <children>
-                        <ListView fx:id="historySelectListView" layoutX="17.0" layoutY="46.0" prefHeight="200.0" prefWidth="200.0"/>
+                        <ListView fx:id="historySelectListView" layoutX="17.0" layoutY="46.0" prefHeight="200.0" prefWidth="200.0" />
                         <RadioButton fx:id="historyByWorkoutRadioButton" layoutX="24.0" layoutY="14.0" mnemonicParsing="false" text="by workout" />
                         <RadioButton fx:id="historyByExerciseRadioButton" layoutX="117.0" layoutY="14.0" mnemonicParsing="false" text="by exercise" />
                         <ListView fx:id="historyLoggedListView" layoutX="240.0" layoutY="46.0" prefHeight="200.0" prefWidth="200.0" />
