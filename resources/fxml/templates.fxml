@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="320" minWidth="480" prefHeight="320" prefWidth="480.0" style="-fx-background-color: blue;" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="exerciseLogging.templatesController">
-    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="70.0" prefWidth="480.0" style="-fx-background-color: blue;">
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="70.0" prefWidth="480.0">
         <children>
             <Text fill="WHITE" layoutX="84.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Name:" />
             <Text fill="WHITE" layoutX="54.0" layoutY="71.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Description:" />
