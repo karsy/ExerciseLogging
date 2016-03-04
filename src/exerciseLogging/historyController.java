@@ -8,6 +8,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.stage.StageStyle;
 
+import java.sql.*;
+import java.util.ArrayList;
 
 public class historyController {
 
@@ -35,8 +37,9 @@ public class historyController {
 
 
         historySelectListView.getSelectionModel().selectedItemProperty().addListener((observable -> {
-            historyLoggedListView.getItems().clear();
-            historyLoggedListView.getItems().addAll(historySelectListView.getSelectionModel().getSelectedItem().toString());
+           // historyLoggedListView.getItems().clear();
+            historyLoggedListView.getItems().setAll(historySelectListView.getSelectionModel().getSelectedItem().toString());
+            //historyLoggedListView.getItems().addAll();
             // TODO: the above should fill the LoggedListView with corresponding logged exercises/workouts.
         }));
 
@@ -60,16 +63,19 @@ public class historyController {
 
     public void historyByWorkout(){
         // TODO: change historySelectListView to be fed with workouts
+        ArrayList<String> times = workoutTimesQuery();
         historySelectListView.getItems().clear();
+        historyLoggedListView.getItems().clear();
         // this should be the list of all workouts
-        historySelectListView.getItems().addAll(list1);
+        historySelectListView.getItems().addAll(times);
     }
 
     public void historyByExercise(){
         // TODO: change historySelectListView to be fed with exercises
+        ArrayList<String> exercises = exercisesNamesQuery();
         historySelectListView.getItems().clear();
-        // this should be a list of all logged exercise-types
-        historySelectListView.getItems().addAll(list2);
+        historyLoggedListView.getItems().clear();
+        historySelectListView.getItems().addAll(exercises);
     }
 
     public void displayLoggedHistory(boolean historyByWorkout){
@@ -94,6 +100,36 @@ public class historyController {
             otherRadioButton.selectedProperty().set(true);
         }
         displayLoggedHistory(historyByWorkoutRadioButton.selectedProperty().get());
+    }
+
+    private ArrayList<String> exercisesNamesQuery(){
+        ArrayList<String> exercises = new ArrayList<>();
+        try{
+            Connection myConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/trainingdiary?useSSL=false", "user", "user");
+            Statement myStatement = myConnection.createStatement();
+            ResultSet myResultSet = myStatement.executeQuery("SELECT * from exercise");
+            while (myResultSet.next()){
+                exercises.add(myResultSet.getString("name"));
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return exercises;
+    }
+
+    private ArrayList<String> workoutTimesQuery(){
+        ArrayList<String> times = new ArrayList<>();
+        try{
+            Connection myConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/trainingdiary?useSSL=false", "user", "user");
+            Statement myStatement = myConnection.createStatement();
+            ResultSet myResultSet = myStatement.executeQuery("SELECT * from workout");
+            while (myResultSet.next()){
+                times.add(myResultSet.getString("time_of_exercise"));
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return times;
     }
 
 }
