@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="320" minWidth="480" prefHeight="320" prefWidth="480.0" style="-fx-background-color: blue;" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="exerciseLogging.templatesController">
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="70.0" prefWidth="480.0">
+        <children>
+            <Text fill="WHITE" layoutX="84.0" layoutY="45.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Name:" />
+            <Text fill="WHITE" layoutX="54.0" layoutY="71.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Description:" />
+            <TextField layoutX="121.0" layoutY="28.0" />
+            <TextField layoutX="121.0" layoutY="54.0" />
+            <ListView layoutX="279.0" layoutY="28.0" prefHeight="210.0" prefWidth="190.0" />
+            <Button layoutX="322.0" layoutY="252.0" mnemonicParsing="false" text="Save new template" />
+            <ListView layoutX="155.0" layoutY="122.0" prefHeight="115.0" prefWidth="115.0" />
+            <ListView layoutX="14.0" layoutY="122.0" prefHeight="115.0" prefWidth="115.0" />
+            <Text fill="WHITE" layoutX="23.0" layoutY="105.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Selected:" />
+            <Text fill="WHITE" layoutX="173.0" layoutY="105.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Exercises:" />
+        </children></AnchorPane>
+</BorderPane>
