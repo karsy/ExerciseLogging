@@ -8,9 +8,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.stage.StageStyle;
 
-/**
- * Created by Sander on 04/03/2016.
- */
+
 public class historyController {
 
 
