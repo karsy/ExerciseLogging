@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="320" minWidth="480" prefHeight="320" prefWidth="480.0" style="-fx-background-color: pink;" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="exerciseLogging.historyController">
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+        <children>
+            <ListView fx:id="historySelectListView" layoutX="17.0" layoutY="46.0" prefHeight="200.0" prefWidth="200.0" />
+            <RadioButton fx:id="historyByWorkoutRadioButton" layoutX="24.0" layoutY="14.0" mnemonicParsing="false" text="by workout" />
+            <RadioButton fx:id="historyByExerciseRadioButton" layoutX="117.0" layoutY="14.0" mnemonicParsing="false" text="by exercise" />
+            <ListView fx:id="historyLoggedListView" layoutX="240.0" layoutY="46.0" prefHeight="200.0" prefWidth="200.0" />
+        </children>
+    </AnchorPane>
+
+</BorderPane>
