@@ -19,11 +19,6 @@ public class historyController {
     private String username = System.getenv("USERNAME");
     private String password = System.getenv("PASSWORD");
 
-
-    // test-lists for testing with tests (TEST-TEST-TEST)
-    String[] list1 = {"hei", "på","deg"};
-    String[] list2 = {"bla", "la", "ta"};
-
     ArrayList<Exercise> exercises = new ArrayList<>(exercisesNamesQuery());
     ArrayList<Template> workouts = new ArrayList<>(workoutTemplateQuery());
 
@@ -44,30 +39,38 @@ public class historyController {
         historyByWorkoutRadioButton.setOnAction(this::radioButtonSwitching);
         historyByExerciseRadioButton.setOnAction(this::radioButtonSwitching);
 
-
         historySelectListView.getSelectionModel().selectedItemProperty().addListener((observable -> {
+            if(historySelectListView.getSelectionModel().getSelectedItem() == null){
+                return;
+            }
            if(historyByExerciseRadioButton.selectedProperty().get()){
-               ArrayList<Result> workoutsWithExercise = workoutsWithExerciseQuery(observable.getClass());
-               for(Result w: workoutsWithExercise){
-                   historyLoggedListView.getItems().add(w);
-               }
+               historyLoggedListView.getItems().setAll(workoutsWithExerciseQuery());
             } else {
-               ArrayList<Result> workoutsWithTemplate = workoutsWithTemplateQuery(observable.getClass());
-               for(Result w: workoutsWithTemplate){
-                   historyLoggedListView.getItems().add(w);
-               }
+               historyLoggedListView.getItems().setAll(workoutsWithTemplateQuery());
            }
-            // TODO: the above should fill the LoggedListView with corresponding logged exercises/workouts.
         }));
 
         historyLoggedListView.getSelectionModel().selectedItemProperty().addListener((observable -> {
-            // TODO: make this alert get the appropriate information from selected workout/exercise.
+            if (historyLoggedListView.getSelectionModel().getSelectedItem() == null){
+                return;
+            }
             Alert workoutAlert = new Alert(Alert.AlertType.INFORMATION);
             workoutAlert.initStyle(StageStyle.UTILITY);
             workoutAlert.setGraphic(null);
-            workoutAlert.setTitle("Result title");
-            workoutAlert.setHeaderText("Result on date: 1234567");
-            workoutAlert.setContentText("*All the fucking data from this workout that we want to display.*");
+            if (historyByExerciseRadioButton.selectedProperty().get()){
+                Result result = (Result) historyLoggedListView.getSelectionModel().getSelectedItem();
+                Exercise exercise = (Exercise) historySelectListView.getSelectionModel().getSelectedItem();
+                workoutAlert.setTitle("Workout");
+                workoutAlert.setHeaderText(exercise.getName() + ": " + result.getDateTime().toString());
+                workoutAlert.setContentText("Weight: " + String.valueOf(result.getWeight()) +
+                "\nSets: " + String.valueOf(result.getSets()) + "\nReps: " + String.valueOf(result.getReps())
+                +"\nDistance: " + String.valueOf(result.getDistance()) + "\nDuration: " + String.valueOf(result.getDuration()));
+            }else{
+                //TODO: Complete this to give prompt containing the whole template-workout
+                Template template = (Template) historyLoggedListView.getSelectionModel().getSelectedItem();
+                // keep on promting out all results from given workout if one is selected.
+                System.out.println("hei");
+            }
             workoutAlert.showAndWait();
 
             // handles a weird listView-related IndexOutOfBoundsException.
@@ -79,7 +82,6 @@ public class historyController {
     }
 
     public void historyByWorkout(){
-        // TODO: change historySelectListView to be fed with workouts
         ArrayList<Template> templates = workoutTemplateQuery();
         historySelectListView.getItems().clear();
         historyLoggedListView.getItems().clear();
@@ -88,7 +90,6 @@ public class historyController {
     }
 
     public void historyByExercise(){
-        // TODO: change historySelectListView to be fed with exercises
         ArrayList<Exercise> exercises = exercisesNamesQuery();
         historySelectListView.getItems().clear();
         historyLoggedListView.getItems().clear();
@@ -104,6 +105,9 @@ public class historyController {
     }
 
     public void radioButtonSwitching(Event event){
+        if(historySelectListView.getItems() != null){
+            historySelectListView.getSelectionModel().clearSelection();
+        }
         RadioButton eventRadioButton = (RadioButton) event.getSource();
         RadioButton otherRadioButton;
         if (eventRadioButton == historyByWorkoutRadioButton) {
@@ -141,7 +145,7 @@ public class historyController {
         try{
             Connection myConnection = DriverManager.getConnection(URL, username, password);
             Statement myStatement = myConnection.createStatement();
-            ResultSet myResultSet = myStatement.executeQuery("SELECT * from Workout");
+            ResultSet myResultSet = myStatement.executeQuery("SELECT * from template");
             while (myResultSet.next()){
                 Template template = new Template(myResultSet.getInt("id"), myResultSet.getString("name"), myResultSet.getString("description"));
                 templates.add(template);
@@ -152,11 +156,12 @@ public class historyController {
         return templates;
     }
 
-    private ArrayList<Result> workoutsWithExerciseQuery(Object exercise) {
-        int ex_id = ((Exercise) exercise).getId();
+    private ArrayList<Result> workoutsWithExerciseQuery() {
+        Exercise exercise = (Exercise) historySelectListView.getSelectionModel().getSelectedItem();
+        int ex_id = exercise.getId();
         ArrayList<Result> ex_results = new ArrayList<>();
         try{
-            Connection myConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/trainingdiary?useSSL=false", "user", "user");
+            Connection myConnection = DriverManager.getConnection(URL, username, password);
             PreparedStatement myStatement = myConnection.prepareStatement("SELECT * FROM result WHERE exercise_id = ?");
             myStatement.setString(1, String.valueOf(ex_id));
             ResultSet myResultSet = myStatement.executeQuery();
@@ -168,19 +173,27 @@ public class historyController {
         } catch (Exception e){
             e.printStackTrace();
         }
-        // return arraylist of these
-        System.out.println(ex_results);
+        System.out.println("results: " + ex_results.toString());
         return ex_results;
     }
 
-    private ArrayList<Result> workoutsWithTemplateQuery(Object template) {
-        // get temp.id
-
-        // query for workout-entries with id
-
-        // return arraylist of these switching between exercises with each temp or fill up?
-        return null;
-
+    private ArrayList<Template> workoutsWithTemplateQuery() {
+        Template template = (Template) historySelectListView.getSelectionModel().getSelectedItem();
+        int temp_id = template.getId();
+        ArrayList<Template> templates = new ArrayList<>();
+        try{
+            Connection myConnection = DriverManager.getConnection(URL, username, password);
+            PreparedStatement myStatement = myConnection.prepareStatement("SELECT * FROM template WHERE id = ?");
+            myStatement.setString(1, String.valueOf(temp_id));
+            ResultSet myResultSet = myStatement.executeQuery();
+            while (myResultSet.next()){
+                Template temp = new Template(myResultSet.getInt("id"), myResultSet.getString("name"), myResultSet.getString("description"));
+                templates.add(temp);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return templates;
     }
 
 }

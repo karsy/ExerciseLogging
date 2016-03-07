@@ -2,7 +2,7 @@ package exerciseLogging;
 
 import java.util.Date;
 
-public class Result {
+public class Result{
 
     private final Date workout_id;
     private final int exercise_id, reps, sets, distance, duration;
@@ -44,5 +44,13 @@ public class Result {
 
     public float getWeight() {
         return weight;
+    }
+
+    int getId() {
+        return Integer.parseInt(workout_id.toString());
+    }
+
+    public String toString(){
+        return this.getDateTime().toString();
     }
 }
