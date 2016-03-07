@@ -42,13 +42,13 @@ public class historyController {
 
         historySelectListView.getSelectionModel().selectedItemProperty().addListener((observable -> {
            if(historyByExerciseRadioButton.selectedProperty().get()){
-               ArrayList<Workout> workoutsWithExercise = workoutsWithExerciseQuery(observable);
-               for(Workout w: workoutsWithExercise){
+               ArrayList<Result> workoutsWithExercise = workoutsWithExerciseQuery(observable);
+               for(Result w: workoutsWithExercise){
                    historyLoggedListView.getItems().add(w);
                }
             } else {
-               ArrayList<Workout> workoutsWithTemplate = workoutsWithTemplateQuery(observable);
-               for(Workout w: workoutsWithTemplate){
+               ArrayList<Result> workoutsWithTemplate = workoutsWithTemplateQuery(observable);
+               for(Result w: workoutsWithTemplate){
                    historyLoggedListView.getItems().add(w);
                }
            }
@@ -60,8 +60,8 @@ public class historyController {
             Alert workoutAlert = new Alert(Alert.AlertType.INFORMATION);
             workoutAlert.initStyle(StageStyle.UTILITY);
             workoutAlert.setGraphic(null);
-            workoutAlert.setTitle("Workout title");
-            workoutAlert.setHeaderText("Workout on date: 1234567");
+            workoutAlert.setTitle("Result title");
+            workoutAlert.setHeaderText("Result on date: 1234567");
             workoutAlert.setContentText("*All the fucking data from this workout that we want to display.*");
             workoutAlert.showAndWait();
 
@@ -146,7 +146,7 @@ public class historyController {
         return templates;
     }
 
-    private ArrayList<Workout> workoutsWithExerciseQuery(Observable exercise) {
+    private ArrayList<Result> workoutsWithExerciseQuery(Observable exercise) {
         // get ex.id
 
         // query for exercise-entries with id
@@ -155,7 +155,7 @@ public class historyController {
         return null;
     }
 
-    private ArrayList<Workout> workoutsWithTemplateQuery(Observable template) {
+    private ArrayList<Result> workoutsWithTemplateQuery(Observable template) {
         // get temp.id
 
         // query for workout-entries with id
