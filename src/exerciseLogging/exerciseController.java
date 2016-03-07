@@ -7,25 +7,10 @@ import javafx.scene.control.*;
 public class exerciseController {
 
     @FXML
-    private Button goalsButton;
+    private Button goalsButton, addCategoryButton, addSubCategoryButton, addExerciseButton;
 
     @FXML
-    private Button addCategoryButton;
-
-    @FXML
-    private Button addSubCategoryButton;
-
-    @FXML
-    private Button addExerciseButton;
-
-    @FXML
-    private TextField subCategoryTextField;
-
-    @FXML
-    private TextField categoryTextField;
-
-    @FXML
-    private TextField exerciseNameTextField;
+    private TextField subCategoryTextField, categoryTextField, exerciseNameTextField;
 
     @FXML
     private TextArea exerciseDescriptionTextArea;
@@ -34,10 +19,7 @@ public class exerciseController {
     private ListView exercisesListView;
 
     @FXML
-    private ComboBox subCategoryComboBox;
-
-    @FXML
-    private ComboBox categoryComboBox;
+    private ComboBox subCategoryComboBox, categoryComboBox;
 
     public void initialize(){
         // TODO: add listeners to make everything work together
