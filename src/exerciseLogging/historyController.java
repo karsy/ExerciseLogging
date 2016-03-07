@@ -1,5 +1,6 @@
 package exerciseLogging;
 
+import com.sun.org.apache.xpath.internal.SourceTree;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.event.Event;
@@ -13,6 +14,10 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class historyController {
+
+    private String URL = "jdbc:mysql://" + System.getenv("IP") + ":" + System.getenv("PORT") + "/" + System.getenv("DBNAME") + "?useSSL=false";
+    private String username = System.getenv("USERNAME");
+    private String password = System.getenv("PASSWORD");
 
 
     // test-lists for testing with tests (TEST-TEST-TEST)
@@ -117,9 +122,10 @@ public class historyController {
     private ArrayList<Exercise> exercisesNamesQuery(){
         ArrayList<Exercise> exercises = new ArrayList<>();
         try{
-            Connection myConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/trainingdiary?useSSL=false", "user", "user");
+            System.out.println(URL + username + password);
+            Connection myConnection = DriverManager.getConnection(URL, username, password);
             Statement myStatement = myConnection.createStatement();
-            ResultSet myResultSet = myStatement.executeQuery("SELECT * from exercise");
+            ResultSet myResultSet = myStatement.executeQuery("SELECT * from Exercise");
             while (myResultSet.next()){
                 Exercise exercise = new Exercise(myResultSet.getInt("id"), myResultSet.getString("name"), myResultSet.getString("description"));
                 exercises.add(exercise);
@@ -133,9 +139,9 @@ public class historyController {
     private ArrayList<Template> workoutTemplateQuery(){
         ArrayList<Template> templates = new ArrayList<>();
         try{
-            Connection myConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/trainingdiary?useSSL=false", "user", "user");
+            Connection myConnection = DriverManager.getConnection(URL, username, password);
             Statement myStatement = myConnection.createStatement();
-            ResultSet myResultSet = myStatement.executeQuery("SELECT * from workout");
+            ResultSet myResultSet = myStatement.executeQuery("SELECT * from Workout");
             while (myResultSet.next()){
                 Template template = new Template(myResultSet.getInt("id"), myResultSet.getString("name"), myResultSet.getString("description"));
                 templates.add(template);
