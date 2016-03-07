@@ -3,9 +3,7 @@ package exerciseLogging;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-/**
- * Created by Sander on 04/03/2016.
- */
+
 public class exerciseController {
 
     @FXML
