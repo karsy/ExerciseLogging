@@ -14,11 +14,6 @@ import java.util.ArrayList;
 
 public class historyController {
 
-
-    // test-lists for testing with tests (TEST-TEST-TEST)
-    String[] list1 = {"hei", "på","deg"};
-    String[] list2 = {"bla", "la", "ta"};
-
     ArrayList<Exercise> exercises = new ArrayList<>(exercisesNamesQuery());
     ArrayList<Template> workouts = new ArrayList<>(workoutTemplateQuery());
 
@@ -42,12 +37,12 @@ public class historyController {
 
         historySelectListView.getSelectionModel().selectedItemProperty().addListener((observable -> {
            if(historyByExerciseRadioButton.selectedProperty().get()){
-               ArrayList<Result> workoutsWithExercise = workoutsWithExerciseQuery(observable);
+               ArrayList<Result> workoutsWithExercise = workoutsWithExerciseQuery(observable.getClass());
                for(Result w: workoutsWithExercise){
                    historyLoggedListView.getItems().add(w);
                }
             } else {
-               ArrayList<Result> workoutsWithTemplate = workoutsWithTemplateQuery(observable);
+               ArrayList<Result> workoutsWithTemplate = workoutsWithTemplateQuery(observable.getClass());
                for(Result w: workoutsWithTemplate){
                    historyLoggedListView.getItems().add(w);
                }
@@ -75,11 +70,11 @@ public class historyController {
 
     public void historyByWorkout(){
         // TODO: change historySelectListView to be fed with workouts
-        ArrayList<Template> times = workoutTemplateQuery();
+        ArrayList<Template> templates = workoutTemplateQuery();
         historySelectListView.getItems().clear();
         historyLoggedListView.getItems().clear();
         // this should be the list of all workouts
-        historySelectListView.getItems().addAll(times);
+        historySelectListView.getItems().addAll(templates);
     }
 
     public void historyByExercise(){
@@ -146,16 +141,28 @@ public class historyController {
         return templates;
     }
 
-    private ArrayList<Result> workoutsWithExerciseQuery(Observable exercise) {
-        // get ex.id
-
-        // query for exercise-entries with id
-
+    private ArrayList<Result> workoutsWithExerciseQuery(Object exercise) {
+        int ex_id = ((Exercise) exercise).getId();
+        ArrayList<Result> ex_results = new ArrayList<>();
+        try{
+            Connection myConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/trainingdiary?useSSL=false", "user", "user");
+            PreparedStatement myStatement = myConnection.prepareStatement("SELECT * FROM result WHERE exercise_id = ?");
+            myStatement.setString(1, String.valueOf(ex_id));
+            ResultSet myResultSet = myStatement.executeQuery();
+            while (myResultSet.next()){
+                Result result = new Result(myResultSet.getDate("workout_id"), myResultSet.getInt("exercise_id"), myResultSet.getFloat("weight"),
+                        myResultSet.getInt("reps"), myResultSet.getInt("sets"), myResultSet.getInt("distance"), myResultSet.getInt("duration"));
+                ex_results.add(result);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
         // return arraylist of these
-        return null;
+        System.out.println(ex_results);
+        return ex_results;
     }
 
-    private ArrayList<Result> workoutsWithTemplateQuery(Observable template) {
+    private ArrayList<Result> workoutsWithTemplateQuery(Object template) {
         // get temp.id
 
         // query for workout-entries with id

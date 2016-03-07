@@ -4,12 +4,12 @@ import java.util.Date;
 
 public class Result {
 
-    private final Date dateTime;
+    private final Date workout_id;
     private final int exercise_id, reps, sets, distance, duration;
     private final float weight;
 
     public Result(Date dateTime, int exercise_id, float weight, int reps, int sets, int distance, int duration){
-        this.dateTime = dateTime;
+        this.workout_id = dateTime;
         this.exercise_id = exercise_id;
         this.weight = weight;
         this.reps = reps;
@@ -19,7 +19,7 @@ public class Result {
     }
 
     public Date getDateTime() {
-        return dateTime;
+        return workout_id;
     }
 
     public int getExercise_id() {
