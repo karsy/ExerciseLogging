@@ -1,6 +1,6 @@
 package exerciseLogging;
 
-public class Exercise {
+public class Exercise{
 
     private final int id;
     private final String name, description;
@@ -23,6 +23,7 @@ public class Exercise {
         return id;
     }
 
+    @Override
     public String toString(){
         return this.name;
     }
