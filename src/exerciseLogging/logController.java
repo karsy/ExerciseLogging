@@ -7,6 +7,7 @@ import javafx.event.Event.*;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 import java.time.LocalDate;
@@ -36,34 +37,44 @@ public class logController {
 
         woHours.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0,23));
         woHours.getEditor().setOnKeyTyped(onlyNumericFields());
-        woHours.getEditor().focusedProperty().addListener(observable -> {
-            updateField(woHours);
-        });
+        woHours.getEditor().setOnKeyPressed(allowArrowKeys(woHours));
+        woHours.getEditor().focusedProperty().addListener(observable -> {updateField(woHours);});
 
         woMinutes.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0,59,0,5));
         woMinutes.getEditor().setOnKeyTyped(onlyNumericFields());
-        woMinutes.getEditor().focusedProperty().addListener(observable -> {
-            updateField(woMinutes);
-        });
+        woMinutes.getEditor().setOnKeyPressed(allowArrowKeys(woMinutes));
+        woMinutes.getEditor().focusedProperty().addListener(observable -> {updateField(woMinutes);});
 
         woDuration.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0,1000,0,10));
         woDuration.getEditor().setOnKeyTyped(onlyNumericFields());
-        woDuration.getEditor().focusedProperty().addListener(observable -> {
-            updateField(woDuration);
-        });
+        woDuration.getEditor().setOnKeyPressed(allowArrowKeys(woDuration));
+        woDuration.getEditor().focusedProperty().addListener(observable -> {updateField(woDuration);});
 
         woShape.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0,10,5));
         woShape.getEditor().setOnKeyTyped(onlyNumericFields());
-        woShape.getEditor().focusedProperty().addListener(observable -> {
-            updateField(woShape);
-        });
+        woShape.getEditor().setOnKeyPressed(allowArrowKeys(woShape));
+        woShape.getEditor().focusedProperty().addListener(observable -> {updateField(woShape);});
 
         woPerformance.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0,10,5));
         woPerformance.getEditor().setOnKeyTyped(onlyNumericFields());
-        woPerformance.getEditor().focusedProperty().addListener(observable -> {
-            updateField(woPerformance);
-        });
+        woPerformance.getEditor().setOnKeyPressed(allowArrowKeys(woPerformance));
+        woPerformance.getEditor().focusedProperty().addListener(observable -> {updateField(woPerformance);});
 
+
+    }
+
+    private EventHandler<KeyEvent> allowArrowKeys(Spinner target) {
+        return new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if (event.getCode() == KeyCode.UP){
+                    target.increment();
+                }
+                else if (event.getCode() == KeyCode.DOWN){
+                    target.decrement();
+                }
+            }
+        };
     }
 
     private void updateField(Spinner target) {
@@ -74,12 +85,9 @@ public class logController {
             target.getValueFactory().setValue(target.getValueFactory().getConverter().fromString(target.getEditor().getText()));
         }
         else {
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    if (!target.getEditor().getText().isEmpty()) {
-                        target.getEditor().selectAll();
-                    }
+            Platform.runLater(() -> {
+                if (!target.getEditor().getText().isEmpty()) {
+                    target.getEditor().selectAll();
                 }
             });
         }
