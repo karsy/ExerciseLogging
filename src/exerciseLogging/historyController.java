@@ -46,7 +46,8 @@ public class historyController {
            if(historyByExerciseRadioButton.selectedProperty().get()){
                historyLoggedListView.getItems().setAll(workoutsWithExerciseQuery());
             } else {
-               historyLoggedListView.getItems().setAll(workoutsWithTemplateQuery());
+               int temp_id = ((Template) historySelectListView.getSelectionModel().getSelectedItem()).getId();
+               historyLoggedListView.getItems().setAll(resultsWithTemplateQuery(temp_id));
            }
         }));
 
@@ -67,9 +68,12 @@ public class historyController {
                 +"\nDistance: " + String.valueOf(result.getDistance()) + "\nDuration: " + String.valueOf(result.getDuration()));
             }else{
                 //TODO: Complete this to give prompt containing the whole template-workout
-                Template template = (Template) historyLoggedListView.getSelectionModel().getSelectedItem();
-                // keep on promting out all results from given workout if one is selected.
-                System.out.println("hei");
+                Result result = (Result) historyLoggedListView.getSelectionModel().getSelectedItem();
+                workoutAlert.setTitle("Workout");
+                workoutAlert.setHeaderText(result.getExercise_Name() + ": " + result.getDateTime().toString());
+                workoutAlert.setContentText("Weight: " + String.valueOf(result.getWeight()) +
+                        "\nSets: " + String.valueOf(result.getSets()) + "\nReps: " + String.valueOf(result.getReps())
+                        +"\nDistance: " + String.valueOf(result.getDistance()) + "\nDuration: " + String.valueOf(result.getDuration()));
             }
             workoutAlert.showAndWait();
 
@@ -129,7 +133,7 @@ public class historyController {
             System.out.println(URL + username + password);
             Connection myConnection = DriverManager.getConnection(URL, username, password);
             Statement myStatement = myConnection.createStatement();
-            ResultSet myResultSet = myStatement.executeQuery("SELECT * from Exercise");
+            ResultSet myResultSet = myStatement.executeQuery("SELECT * from exercise");
             while (myResultSet.next()){
                 Exercise exercise = new Exercise(myResultSet.getInt("id"), myResultSet.getString("name"), myResultSet.getString("description"));
                 exercises.add(exercise);
@@ -167,7 +171,7 @@ public class historyController {
             ResultSet myResultSet = myStatement.executeQuery();
             while (myResultSet.next()){
                 Result result = new Result(myResultSet.getDate("workout_id"), myResultSet.getInt("exercise_id"), myResultSet.getFloat("weight"),
-                        myResultSet.getInt("reps"), myResultSet.getInt("sets"), myResultSet.getInt("distance"), myResultSet.getInt("duration"));
+                        myResultSet.getInt("reps"), myResultSet.getInt("sets"), myResultSet.getInt("distance"), myResultSet.getInt("duration"), exercise.getName());
                 ex_results.add(result);
             }
         } catch (Exception e){
@@ -196,4 +200,22 @@ public class historyController {
         return templates;
     }
 
+    private ArrayList<Result> resultsWithTemplateQuery(int template_id){
+        ArrayList<Result> results = new ArrayList<>();
+        try{
+            Connection myConnection = DriverManager.getConnection(URL, username, password);
+            PreparedStatement myStatement = myConnection.prepareStatement("SELECT r.workout_id, r.weight, r.reps, r.sets, r.distance, r.duration, t.name, t.exercise_id FROM result AS r JOIN (SELECT template_id, exercise_id, exercise.name FROM template JOIN templateexercise JOIN exercise WHERE template_id = ?) AS t GROUP BY r.workout_id");
+            myStatement.setString(1, String.valueOf(template_id));
+            ResultSet myResultSet = myStatement.executeQuery();
+            while (myResultSet.next()){
+                Result result = new Result(myResultSet.getDate("r.workout_id"), myResultSet.getInt("t.exercise_id")
+                , myResultSet.getFloat("r.weight"), myResultSet.getInt("r.reps"), myResultSet.getInt("r.sets")
+                , myResultSet.getInt("distance"), myResultSet.getInt("duration"), myResultSet.getString("t.name"));
+                results.add(result);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return results;
+    }
 }
