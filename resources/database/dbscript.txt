@@ -25,16 +25,15 @@ CREATE TABLE IF NOT EXISTS ExerciseReplacement(
 );
 
 CREATE TABLE IF NOT EXISTS Goal(
-    goal_number INT NOT NULL AUTO_INCREMENT,
     weight FLOAT,
     reps INT,
     sets INT,
     distance INT,
     duration INT,
-    created DATETIME NOW(),
+    created DATETIME DEFAULT NOW(),
     achieved DATETIME,
     exercise_id INT NOT NULL,
-    PRIMARY KEY (exercise_id, goal_number),
+    PRIMARY KEY (exercise_id, created),
     FOREIGN KEY(exercise_id) REFERENCES Exercise(id)
 );
 

@@ -101,7 +101,7 @@ public class exerciseController {
         Exercise ex = (Exercise)(exercisesListView.getSelectionModel().getSelectedItems().get(0));
         try{
             Connection myConnection = DriverManager.getConnection(URL, username, password);
-            PreparedStatement myStatement = myConnection.prepareStatement("INSERT INTO Goal (weight, reps, sets, distance, duration, exercise_id)VALUES(?, ?, ?, ?, ?, ?)");
+            PreparedStatement myStatement = myConnection.prepareStatement("INSERT INTO Goal VALUES(?, ?, ?, ?, ?, DEFAULT, NULL, ?)");
             myStatement.setString(1, String.valueOf(weight.getValue()));
             myStatement.setString(2, String.valueOf(reps.getValue()));
             myStatement.setString(3, String.valueOf(sets.getValue()));
