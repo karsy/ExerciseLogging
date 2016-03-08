@@ -21,8 +21,8 @@
                 <children>
                     <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Subcategory:" />
                     <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Category:" GridPane.columnIndex="1" />
-                    <ComboBox fx:id="subCategoryComboBox" onAction="#changeExerciseSubCategory" prefWidth="150.0" GridPane.rowIndex="1" />
-                    <ComboBox fx:id="categoryComboBox" onAction="#changeExerciseCategory" prefHeight="25.0" prefWidth="162.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                    <ComboBox fx:id="subCategoryComboBox" prefWidth="150.0" GridPane.rowIndex="1" />
+                    <ComboBox fx:id="categoryComboBox"  prefHeight="25.0" prefWidth="162.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                     <HBox prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="2">
                         <children>
                             <TextField fx:id="subCategoryTextField" prefHeight="25.0" prefWidth="113.0" />
