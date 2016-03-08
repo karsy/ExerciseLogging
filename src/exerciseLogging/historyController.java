@@ -41,11 +41,13 @@ public class historyController {
             if(historySelectListView.getSelectionModel().getSelectedItem() == null){
                 return;
             }
-           if(historyByExerciseRadioButton.selectedProperty().get()){
-               historyLoggedListView.getItems().setAll(workoutsWithExerciseQuery());
-            } else {
+            historyLoggedListView.getItems().clear();
+            if(historyByExerciseRadioButton.selectedProperty().get()){
+               historyLoggedListView.getItems().addAll(workoutsWithExerciseQuery());
+           } else {
                int temp_id = ((Template) historySelectListView.getSelectionModel().getSelectedItem()).getId();
-               historyLoggedListView.getItems().setAll(resultsWithTemplateQuery(temp_id));
+               System.out.println(temp_id);
+               historyLoggedListView.getItems().addAll(resultsWithTemplateQuery(temp_id));
            }
         }));
 
@@ -168,19 +170,29 @@ public class historyController {
         ArrayList<Result> results = new ArrayList<>();
         try{
             Connection myConnection = DriverManager.getConnection(URL, username, password);
-            PreparedStatement myStatement = myConnection.prepareStatement("SELECT r.workout_id, r.weight, r.reps, r.sets, r.distance, r.duration, t.name, t.exercise_id FROM result AS r JOIN (SELECT template_id, exercise_id, exercise.name FROM template JOIN templateexercise JOIN exercise WHERE template_id = ?) AS t GROUP BY r.workout_id");
+            PreparedStatement myStatement = myConnection.prepareStatement("select workout_id, exercise_id, weight, reps, sets, distance, duration, t.name from result as r join (select template.name, template.id, workout.time_of_exercise from template join workout on template.id = workout.template_id) as t on r.workout_id = t.time_of_exercise where t.id = ?");
             myStatement.setString(1, String.valueOf(template_id));
             ResultSet myResultSet = myStatement.executeQuery();
             while (myResultSet.next()){
-                Result result = new Result(myResultSet.getDate("r.workout_id"), myResultSet.getInt("t.exercise_id")
+                Result result = new Result(myResultSet.getDate("r.workout_id"), myResultSet.getInt("r.exercise_id")
                 , myResultSet.getFloat("r.weight"), myResultSet.getInt("r.reps"), myResultSet.getInt("r.sets")
-                , myResultSet.getInt("distance"), myResultSet.getInt("duration"), myResultSet.getString("t.name"));
+                , myResultSet.getInt("distance"), myResultSet.getInt("duration"), getExerciseById(myResultSet.getInt("exercise_id")));
                 results.add(result);
             }
             myConnection.close();
         } catch (Exception e){
             e.printStackTrace();
         }
+        System.out.println(results);
         return results;
+    }
+
+    private String getExerciseById(int id){
+        for (Exercise e: exercises){
+            if (e.getId() == id){
+                return e.getName();
+            }
+        }
+        return null;
     }
 }
