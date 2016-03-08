@@ -1,11 +1,13 @@
 package exerciseLogging;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleButton;
 import javafx.stage.StageStyle;
 
 import java.sql.*;
@@ -20,6 +22,8 @@ public class historyController {
     ArrayList<Exercise> exercises = new ArrayList<>(exercisesNamesQuery());
     ArrayList<Template> workouts = new ArrayList<>(workoutTemplateQuery());
 
+    private boolean goals = false;
+
     @FXML
     private ListView historySelectListView;
 
@@ -32,40 +36,56 @@ public class historyController {
     @FXML
     private RadioButton historyByExerciseRadioButton;
 
+    @FXML
+    private RadioButton goalsRadioButton;
+
     public void initialize(){
 
         historyByWorkoutRadioButton.setOnAction(this::radioButtonSwitching);
         historyByExerciseRadioButton.setOnAction(this::radioButtonSwitching);
+        goalsRadioButton.setOnAction(this::toggleGoals);
 
         historySelectListView.getSelectionModel().selectedItemProperty().addListener((observable -> {
             if(historySelectListView.getSelectionModel().getSelectedItem() == null){
                 return;
             }
             historyLoggedListView.getItems().clear();
+
             if(historyByExerciseRadioButton.selectedProperty().get()){
-               historyLoggedListView.getItems().addAll(workoutsWithExerciseQuery());
+                if(goals){
+                    historyLoggedListView.getItems().addAll(goalsWithExerciseQuery());
+                }else {
+                    historyLoggedListView.getItems().addAll(workoutsWithExerciseQuery());
+                }
            } else {
                int temp_id = ((Template) historySelectListView.getSelectionModel().getSelectedItem()).getId();
-               System.out.println(temp_id);
-               historyLoggedListView.getItems().addAll(resultsWithTemplateQuery(temp_id));
-           }
+               if (goals){
+                    historyLoggedListView.getItems().addAll(goalsWithTemplateQuery(temp_id));
+               } else {
+                   historyLoggedListView.getItems().addAll(resultsWithTemplateQuery(temp_id));
+               }
+            }
         }));
 
         historyLoggedListView.getSelectionModel().selectedItemProperty().addListener((observable -> {
             if (historyLoggedListView.getSelectionModel().getSelectedItem() == null){
                 return;
             }
-
-            Alert workoutAlert = new Alert(Alert.AlertType.INFORMATION);
-            workoutAlert.initStyle(StageStyle.UTILITY);
-            workoutAlert.setGraphic(null);
-            Result result = (Result) historyLoggedListView.getSelectionModel().getSelectedItem();
-            workoutAlert.setTitle("Results");
-            workoutAlert.setHeaderText(result.getExercise_Name() + " performed " + result.getDateTime().toString());
-            workoutAlert.setContentText("Weight: " + String.valueOf(result.getWeight()) +
-            "\nSets: " + String.valueOf(result.getSets()) + "\nReps: " + String.valueOf(result.getReps())
-            +"\nDistance: " + String.valueOf(result.getDistance()) + "\nDuration: " + String.valueOf(result.getDuration()));
-            workoutAlert.showAndWait();
+            if (goals){
+                // TODO: MAKE ALERT BASED ON THE SELECTED GOAL AND DISPLAY THIS.
+                return;
+            } else {
+                Alert workoutAlert = new Alert(Alert.AlertType.INFORMATION);
+                workoutAlert.initStyle(StageStyle.UTILITY);
+                workoutAlert.setGraphic(null);
+                Result result = (Result) historyLoggedListView.getSelectionModel().getSelectedItem();
+                workoutAlert.setTitle("Results");
+                workoutAlert.setHeaderText(result.getExercise_Name() + " performed " + result.getDateTime().toString());
+                workoutAlert.setContentText("Weight: " + String.valueOf(result.getWeight()) +
+                        "\nSets: " + String.valueOf(result.getSets()) + "\nReps: " + String.valueOf(result.getReps())
+                        +"\nDistance: " + String.valueOf(result.getDistance()) + "\nDuration: " + String.valueOf(result.getDuration()));
+                workoutAlert.showAndWait();
+            }
 
             // handles a weird listView-related IndexOutOfBoundsException.
             Platform.runLater(() -> {
@@ -74,6 +94,13 @@ public class historyController {
 
         }));
     }
+
+    private void toggleGoals(ActionEvent actionEvent) {
+        RadioButton goals = (RadioButton) actionEvent.getSource();
+        this.goals = goals.selectedProperty().get();
+        displayLoggedHistory(historyByWorkoutRadioButton.selectedProperty().get());
+    }
+
 
     public void historyByWorkout(){
         ArrayList<Template> templates = workoutTemplateQuery();
@@ -195,4 +222,32 @@ public class historyController {
         }
         return null;
     }
+
+    private ArrayList<Goal> goalsWithExerciseQuery(){
+        Exercise exercise = (Exercise) historySelectListView.getSelectionModel().getSelectedItem();
+        int ex_id = exercise.getId();
+        ArrayList<Goal> goals = new ArrayList<>();
+        try {
+            Connection myConnection = DriverManager.getConnection(URL, username, password);
+            PreparedStatement myStatement = myConnection.prepareStatement("SELECT * FROM goal WHERE exercise_id = ?");
+            myStatement.setString(1, String.valueOf(ex_id));
+            ResultSet myResultSet = myStatement.executeQuery();
+            while (myResultSet.next()) {
+                Goal goal = new Goal(myResultSet.getInt("goal_number"), myResultSet.getInt("reps"), myResultSet.getInt("sets"),
+                        myResultSet.getInt("distance"), myResultSet.getInt("duration"), myResultSet.getInt("exercise_id"),
+                        myResultSet.getFloat("weight"), myResultSet.getDate("created"), myResultSet.getDate("achieved"), getExerciseById(myResultSet.getInt("exercise_id")));
+                goals.add(goal);
+            }
+            myConnection.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return goals;
+    }
+
+    private ArrayList<Goal> goalsWithTemplateQuery(int temp_id){
+        // TODO: WRITE QUERY AND RETURN LIST OF GOALS THAT ARE RELATED TO EXERCISES THAT BELONG TO THE TEMPLATE
+        return null;
+    }
+
 }
