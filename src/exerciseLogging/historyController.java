@@ -252,8 +252,24 @@ public class historyController {
     }
 
     private ArrayList<Goal> goalsWithTemplateQuery(int temp_id){
-        // TODO: WRITE QUERY AND RETURN LIST OF GOALS THAT ARE RELATED TO EXERCISES THAT BELONG TO THE TEMPLATE
-        return null;
+        ArrayList<Goal> goals = new ArrayList<>();
+        try{
+            Connection myConnection = DriverManager.getConnection(URL, username, password);
+            PreparedStatement myStatement = myConnection.prepareStatement("select distinct g.goal_number, g.reps, g.sets, g.distance, g.duration, g.exercise_id, g.weight, g.created, g.achieved from goal as g join exercise as e on g.exercise_id = e.id join templateexercise as te on e.id = te.exercise_id join template as t on te.template_id = ?");
+            myStatement.setString(1, String.valueOf(temp_id));
+            ResultSet myResultSet = myStatement.executeQuery();
+            while (myResultSet.next()){
+                Goal goal = new Goal(myResultSet.getInt("g.goal_number"), myResultSet.getInt("g.reps"), myResultSet.getInt("g.sets"),
+                        myResultSet.getInt("g.distance"), myResultSet.getInt("g.duration"), myResultSet.getInt("g.exercise_id"),
+                        myResultSet.getFloat("g.weight"), myResultSet.getDate("g.created"), myResultSet.getDate("g.achieved"),
+                        getExerciseById(myResultSet.getInt("g.exercise_id")));
+                goals.add(goal);
+            }
+            myConnection.close();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return goals;
     }
 
 }
