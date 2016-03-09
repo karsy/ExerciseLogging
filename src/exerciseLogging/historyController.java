@@ -1,11 +1,13 @@
 package exerciseLogging;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleButton;
 import javafx.stage.StageStyle;
 
 import java.sql.*;
@@ -20,6 +22,8 @@ public class historyController {
     ArrayList<Exercise> exercises = new ArrayList<>(exercisesNamesQuery());
     ArrayList<Template> workouts = new ArrayList<>(workoutTemplateQuery());
 
+    private boolean goals = false;
+
     @FXML
     private ListView historySelectListView;
 
@@ -32,21 +36,35 @@ public class historyController {
     @FXML
     private RadioButton historyByExerciseRadioButton;
 
+    @FXML
+    private RadioButton goalsRadioButton;
+
     public void initialize(){
 
         historyByWorkoutRadioButton.setOnAction(this::radioButtonSwitching);
         historyByExerciseRadioButton.setOnAction(this::radioButtonSwitching);
+        goalsRadioButton.setOnAction(this::toggleGoals);
 
         historySelectListView.getSelectionModel().selectedItemProperty().addListener((observable -> {
             if(historySelectListView.getSelectionModel().getSelectedItem() == null){
                 return;
             }
-           if(historyByExerciseRadioButton.selectedProperty().get()){
-               historyLoggedListView.getItems().setAll(workoutsWithExerciseQuery());
-            } else {
+            historyLoggedListView.getItems().clear();
+
+            if(historyByExerciseRadioButton.selectedProperty().get()){
+                if(goals){
+                    historyLoggedListView.getItems().addAll(goalsWithExerciseQuery());
+                }else {
+                    historyLoggedListView.getItems().addAll(workoutsWithExerciseQuery());
+                }
+           } else {
                int temp_id = ((Template) historySelectListView.getSelectionModel().getSelectedItem()).getId();
-               historyLoggedListView.getItems().setAll(resultsWithTemplateQuery(temp_id));
-           }
+               if (goals){
+                    historyLoggedListView.getItems().addAll(goalsWithTemplateQuery(temp_id));
+               } else {
+                   historyLoggedListView.getItems().addAll(resultsWithTemplateQuery(temp_id));
+               }
+            }
         }));
 
         historyLoggedListView.getSelectionModel().selectedItemProperty().addListener((observable -> {
@@ -54,16 +72,26 @@ public class historyController {
                 return;
             }
 
-            Alert workoutAlert = new Alert(Alert.AlertType.INFORMATION);
-            workoutAlert.initStyle(StageStyle.UTILITY);
-            workoutAlert.setGraphic(null);
-            Result result = (Result) historyLoggedListView.getSelectionModel().getSelectedItem();
-            workoutAlert.setTitle("Results");
-            workoutAlert.setHeaderText(result.getExercise_Name() + " performed " + result.getDateTime().toString());
-            workoutAlert.setContentText("Weight: " + String.valueOf(result.getWeight()) +
-            "\nSets: " + String.valueOf(result.getSets()) + "\nReps: " + String.valueOf(result.getReps())
-            +"\nDistance: " + String.valueOf(result.getDistance()) + "\nDuration: " + String.valueOf(result.getDuration()));
-            workoutAlert.showAndWait();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.initStyle(StageStyle.UTILITY);
+            alert.setGraphic(null);
+            if (goals){
+                Goal goal = (Goal) historyLoggedListView.getSelectionModel().getSelectedItem();
+                alert.setTitle("Goals");
+                alert.setHeaderText(getExerciseById(goal.getExercise_id()) + "-goal added on: " + goal.getCreated());
+                alert.setHeaderText("Weight: " + String.valueOf(goal.getWeight()) +
+                        "\nSets: " + String.valueOf(goal.getSets()) + "\nReps: " + String.valueOf(goal.getReps())
+                        +"\nDistance: " + String.valueOf(goal.getDistance()) + "\nDuration: " + String.valueOf(goal.getDuration()+"\nAchieved: "
+                + ((goal.getAchieved() == null) ? "Not yet achieved" : goal.getAchieved())));
+            } else {
+                Result result = (Result) historyLoggedListView.getSelectionModel().getSelectedItem();
+                alert.setTitle("Results");
+                alert.setHeaderText(result.getExercise_Name() + " performed " + result.getDateTime().toString());
+                alert.setContentText("Weight: " + String.valueOf(result.getWeight()) +
+                        "\nSets: " + String.valueOf(result.getSets()) + "\nReps: " + String.valueOf(result.getReps())
+                        +"\nDistance: " + String.valueOf(result.getDistance()) + "\nDuration: " + String.valueOf(result.getDuration()));
+            }
+            alert.showAndWait();
 
             // handles a weird listView-related IndexOutOfBoundsException.
             Platform.runLater(() -> {
@@ -72,6 +100,13 @@ public class historyController {
 
         }));
     }
+
+    private void toggleGoals(ActionEvent actionEvent) {
+        RadioButton goals = (RadioButton) actionEvent.getSource();
+        this.goals = goals.selectedProperty().get();
+        displayLoggedHistory(historyByWorkoutRadioButton.selectedProperty().get());
+    }
+
 
     public void historyByWorkout(){
         ArrayList<Template> templates = workoutTemplateQuery();
@@ -168,19 +203,73 @@ public class historyController {
         ArrayList<Result> results = new ArrayList<>();
         try{
             Connection myConnection = DriverManager.getConnection(URL, username, password);
-            PreparedStatement myStatement = myConnection.prepareStatement("SELECT r.workout_id, r.weight, r.reps, r.sets, r.distance, r.duration, t.name, t.exercise_id FROM result AS r JOIN (SELECT template_id, exercise_id, exercise.name FROM template JOIN templateexercise JOIN exercise WHERE template_id = ?) AS t GROUP BY r.workout_id");
+            PreparedStatement myStatement = myConnection.prepareStatement("select workout_id, exercise_id, weight, reps, sets, distance, duration, t.name from result as r join (select template.name, template.id, workout.time_of_exercise from template join workout on template.id = workout.template_id) as t on r.workout_id = t.time_of_exercise where t.id = ?");
             myStatement.setString(1, String.valueOf(template_id));
             ResultSet myResultSet = myStatement.executeQuery();
             while (myResultSet.next()){
-                Result result = new Result(myResultSet.getDate("r.workout_id"), myResultSet.getInt("t.exercise_id")
+                Result result = new Result(myResultSet.getDate("r.workout_id"), myResultSet.getInt("r.exercise_id")
                 , myResultSet.getFloat("r.weight"), myResultSet.getInt("r.reps"), myResultSet.getInt("r.sets")
-                , myResultSet.getInt("distance"), myResultSet.getInt("duration"), myResultSet.getString("t.name"));
+                , myResultSet.getInt("distance"), myResultSet.getInt("duration"), getExerciseById(myResultSet.getInt("exercise_id")));
                 results.add(result);
             }
             myConnection.close();
         } catch (Exception e){
             e.printStackTrace();
         }
+        System.out.println(results);
         return results;
     }
+
+    private String getExerciseById(int id){
+        for (Exercise e: exercises){
+            if (e.getId() == id){
+                return e.getName();
+            }
+        }
+        return null;
+    }
+
+    private ArrayList<Goal> goalsWithExerciseQuery(){
+        Exercise exercise = (Exercise) historySelectListView.getSelectionModel().getSelectedItem();
+        int ex_id = exercise.getId();
+        ArrayList<Goal> goals = new ArrayList<>();
+        try {
+            Connection myConnection = DriverManager.getConnection(URL, username, password);
+            PreparedStatement myStatement = myConnection.prepareStatement("SELECT * FROM goal WHERE exercise_id = ?");
+            myStatement.setString(1, String.valueOf(ex_id));
+            ResultSet myResultSet = myStatement.executeQuery();
+            while (myResultSet.next()) {
+                Goal goal = new Goal(myResultSet.getInt("goal_number"), myResultSet.getInt("reps"), myResultSet.getInt("sets"),
+                        myResultSet.getInt("distance"), myResultSet.getInt("duration"), myResultSet.getInt("exercise_id"),
+                        myResultSet.getFloat("weight"), myResultSet.getDate("created"), myResultSet.getDate("achieved"), getExerciseById(myResultSet.getInt("exercise_id")));
+                goals.add(goal);
+            }
+            myConnection.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return goals;
+    }
+
+    private ArrayList<Goal> goalsWithTemplateQuery(int temp_id){
+        ArrayList<Goal> goals = new ArrayList<>();
+        try{
+            Connection myConnection = DriverManager.getConnection(URL, username, password);
+            PreparedStatement myStatement = myConnection.prepareStatement("select distinct g.goal_number, g.reps, g.sets, g.distance, g.duration, g.exercise_id, g.weight, g.created, g.achieved from goal as g join exercise as e on g.exercise_id = e.id join templateexercise as te on e.id = te.exercise_id join template as t on te.template_id = ?");
+            myStatement.setString(1, String.valueOf(temp_id));
+            ResultSet myResultSet = myStatement.executeQuery();
+            while (myResultSet.next()){
+                Goal goal = new Goal(myResultSet.getInt("g.goal_number"), myResultSet.getInt("g.reps"), myResultSet.getInt("g.sets"),
+                        myResultSet.getInt("g.distance"), myResultSet.getInt("g.duration"), myResultSet.getInt("g.exercise_id"),
+                        myResultSet.getFloat("g.weight"), myResultSet.getDate("g.created"), myResultSet.getDate("g.achieved"),
+                        getExerciseById(myResultSet.getInt("g.exercise_id")));
+                goals.add(goal);
+            }
+            myConnection.close();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return goals;
+    }
+
 }
