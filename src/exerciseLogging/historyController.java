@@ -71,21 +71,27 @@ public class historyController {
             if (historyLoggedListView.getSelectionModel().getSelectedItem() == null){
                 return;
             }
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.initStyle(StageStyle.UTILITY);
+            alert.setGraphic(null);
             if (goals){
-                // TODO: MAKE ALERT BASED ON THE SELECTED GOAL AND DISPLAY THIS.
-                return;
+                Goal goal = (Goal) historyLoggedListView.getSelectionModel().getSelectedItem();
+                alert.setTitle("Goals");
+                alert.setHeaderText(getExerciseById(goal.getExercise_id()) + "-goal added on: " + goal.getCreated());
+                alert.setHeaderText("Weight: " + String.valueOf(goal.getWeight()) +
+                        "\nSets: " + String.valueOf(goal.getSets()) + "\nReps: " + String.valueOf(goal.getReps())
+                        +"\nDistance: " + String.valueOf(goal.getDistance()) + "\nDuration: " + String.valueOf(goal.getDuration()+"\nAchieved: "
+                + ((goal.getAchieved() == null) ? "Not yet achieved" : goal.getAchieved())));
             } else {
-                Alert workoutAlert = new Alert(Alert.AlertType.INFORMATION);
-                workoutAlert.initStyle(StageStyle.UTILITY);
-                workoutAlert.setGraphic(null);
                 Result result = (Result) historyLoggedListView.getSelectionModel().getSelectedItem();
-                workoutAlert.setTitle("Results");
-                workoutAlert.setHeaderText(result.getExercise_Name() + " performed " + result.getDateTime().toString());
-                workoutAlert.setContentText("Weight: " + String.valueOf(result.getWeight()) +
+                alert.setTitle("Results");
+                alert.setHeaderText(result.getExercise_Name() + " performed " + result.getDateTime().toString());
+                alert.setContentText("Weight: " + String.valueOf(result.getWeight()) +
                         "\nSets: " + String.valueOf(result.getSets()) + "\nReps: " + String.valueOf(result.getReps())
                         +"\nDistance: " + String.valueOf(result.getDistance()) + "\nDuration: " + String.valueOf(result.getDuration()));
-                workoutAlert.showAndWait();
             }
+            alert.showAndWait();
 
             // handles a weird listView-related IndexOutOfBoundsException.
             Platform.runLater(() -> {
