@@ -4,13 +4,12 @@ import java.util.Date;
 
 public class Goal {
 
-    private final int goal_number, reps, sets, distance, duration, exercise_id;
+    private final int reps, sets, distance, duration, exercise_id;
     private final float weight;
     private final Date created, achieved;
     private final String name;
 
-    public Goal(int goal_number, int reps, int sets, int distance, int duration, int exercise_id, float weight, Date created, Date achieved, String name){
-        this.goal_number = goal_number;
+    public Goal(int reps, int sets, int distance, int duration, int exercise_id, float weight, Date created, Date achieved, String name){
         this.reps = reps;
         this.sets = sets;
         this.distance = distance;
@@ -24,10 +23,6 @@ public class Goal {
 
     public int getDistance() {
         return distance;
-    }
-
-    public int getGoal_number() {
-        return goal_number;
     }
 
     public int getReps() {

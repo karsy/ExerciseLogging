@@ -149,7 +149,7 @@ public class historyController {
         try{
             Connection myConnection = DriverManager.getConnection(URL, username, password);
             Statement myStatement = myConnection.createStatement();
-            ResultSet myResultSet = myStatement.executeQuery("SELECT * from exercise");
+            ResultSet myResultSet = myStatement.executeQuery("SELECT * from Exercise");
             while (myResultSet.next()){
                 Exercise exercise = new Exercise(myResultSet.getInt("id"), myResultSet.getString("name"), myResultSet.getString("description"));
                 exercises.add(exercise);
@@ -166,7 +166,7 @@ public class historyController {
         try{
             Connection myConnection = DriverManager.getConnection(URL, username, password);
             Statement myStatement = myConnection.createStatement();
-            ResultSet myResultSet = myStatement.executeQuery("SELECT * from template");
+            ResultSet myResultSet = myStatement.executeQuery("SELECT * from Template");
             while (myResultSet.next()){
                 Template template = new Template(myResultSet.getInt("id"), myResultSet.getString("name"), myResultSet.getString("description"));
                 templates.add(template);
@@ -184,7 +184,7 @@ public class historyController {
         ArrayList<Result> ex_results = new ArrayList<>();
         try {
             Connection myConnection = DriverManager.getConnection(URL, username, password);
-            PreparedStatement myStatement = myConnection.prepareStatement("SELECT * FROM result WHERE exercise_id = ?");
+            PreparedStatement myStatement = myConnection.prepareStatement("SELECT * FROM Result WHERE exercise_id = ?");
             myStatement.setString(1, String.valueOf(ex_id));
             ResultSet myResultSet = myStatement.executeQuery();
             while (myResultSet.next()) {
@@ -203,7 +203,7 @@ public class historyController {
         ArrayList<Result> results = new ArrayList<>();
         try{
             Connection myConnection = DriverManager.getConnection(URL, username, password);
-            PreparedStatement myStatement = myConnection.prepareStatement("select workout_id, exercise_id, weight, reps, sets, distance, duration, t.name from result as r join (select template.name, template.id, workout.time_of_exercise from template join workout on template.id = workout.template_id) as t on r.workout_id = t.time_of_exercise where t.id = ?");
+            PreparedStatement myStatement = myConnection.prepareStatement("select workout_id, exercise_id, weight, reps, sets, distance, duration, t.name from Result as r join (select template.name, template.id, workout.time_of_exercise from Template join Workout on Template.id = Workout.template_id) as t on r.workout_id = t.time_of_exercise where t.id = ?");
             myStatement.setString(1, String.valueOf(template_id));
             ResultSet myResultSet = myStatement.executeQuery();
             while (myResultSet.next()){
@@ -234,11 +234,11 @@ public class historyController {
         ArrayList<Goal> goals = new ArrayList<>();
         try {
             Connection myConnection = DriverManager.getConnection(URL, username, password);
-            PreparedStatement myStatement = myConnection.prepareStatement("SELECT * FROM goal WHERE exercise_id = ?");
+            PreparedStatement myStatement = myConnection.prepareStatement("SELECT * FROM Goal WHERE exercise_id = ?");
             myStatement.setString(1, String.valueOf(ex_id));
             ResultSet myResultSet = myStatement.executeQuery();
             while (myResultSet.next()) {
-                Goal goal = new Goal(myResultSet.getInt("goal_number"), myResultSet.getInt("reps"), myResultSet.getInt("sets"),
+                Goal goal = new Goal(myResultSet.getInt("reps"), myResultSet.getInt("sets"),
                         myResultSet.getInt("distance"), myResultSet.getInt("duration"), myResultSet.getInt("exercise_id"),
                         myResultSet.getFloat("weight"), myResultSet.getDate("created"), myResultSet.getDate("achieved"), getExerciseById(myResultSet.getInt("exercise_id")));
                 goals.add(goal);
@@ -254,11 +254,11 @@ public class historyController {
         ArrayList<Goal> goals = new ArrayList<>();
         try{
             Connection myConnection = DriverManager.getConnection(URL, username, password);
-            PreparedStatement myStatement = myConnection.prepareStatement("select distinct g.goal_number, g.reps, g.sets, g.distance, g.duration, g.exercise_id, g.weight, g.created, g.achieved from goal as g join exercise as e on g.exercise_id = e.id join templateexercise as te on e.id = te.exercise_id join template as t on te.template_id = ?");
+            PreparedStatement myStatement = myConnection.prepareStatement("select distinct g.goal_number, g.reps, g.sets, g.distance, g.duration, g.exercise_id, g.weight, g.created, g.achieved from Goal as g join Exercise as e on g.exercise_id = e.id join TemplateExercise as te on e.id = te.exercise_id join Template as t on te.template_id = ?");
             myStatement.setString(1, String.valueOf(temp_id));
             ResultSet myResultSet = myStatement.executeQuery();
             while (myResultSet.next()){
-                Goal goal = new Goal(myResultSet.getInt("g.goal_number"), myResultSet.getInt("g.reps"), myResultSet.getInt("g.sets"),
+                Goal goal = new Goal(myResultSet.getInt("g.reps"), myResultSet.getInt("g.sets"),
                         myResultSet.getInt("g.distance"), myResultSet.getInt("g.duration"), myResultSet.getInt("g.exercise_id"),
                         myResultSet.getFloat("g.weight"), myResultSet.getDate("g.created"), myResultSet.getDate("g.achieved"),
                         getExerciseById(myResultSet.getInt("g.exercise_id")));
