@@ -79,7 +79,7 @@ public class historyController {
                 Goal goal = (Goal) historyLoggedListView.getSelectionModel().getSelectedItem();
                 alert.setTitle("Goals");
                 alert.setHeaderText(getExerciseById(goal.getExercise_id()) + "-goal added on: " + goal.getCreated());
-                alert.setHeaderText("Weight: " + String.valueOf(goal.getWeight()) +
+                alert.setContentText("Weight: " + String.valueOf(goal.getWeight()) +
                         "\nSets: " + String.valueOf(goal.getSets()) + "\nReps: " + String.valueOf(goal.getReps())
                         +"\nDistance: " + String.valueOf(goal.getDistance()) + "\nDuration: " + String.valueOf(goal.getDuration()+"\nAchieved: "
                 + ((goal.getAchieved() == null) ? "Not yet achieved" : goal.getAchieved())));
@@ -104,7 +104,7 @@ public class historyController {
     private void toggleGoals(ActionEvent actionEvent) {
         RadioButton goals = (RadioButton) actionEvent.getSource();
         this.goals = goals.selectedProperty().get();
-        displayLoggedHistory(historyByWorkoutRadioButton.selectedProperty().get());
+        displayLoggedHistory();
     }
 
 
@@ -122,10 +122,10 @@ public class historyController {
         historySelectListView.getItems().addAll(exercises);
     }
 
-    public void displayLoggedHistory(boolean historyByWorkout){
-        if(historyByWorkout){
+    public void displayLoggedHistory(){
+        if(historyByWorkoutRadioButton.selectedProperty().get()){
             historyByWorkout();
-        } else {
+        } else if(historyByExerciseRadioButton.selectedProperty().get()) {
             historyByExercise();
         }
     }
@@ -141,7 +141,7 @@ public class historyController {
         } else {
             otherRadioButton.selectedProperty().set(true);
         }
-        displayLoggedHistory(historyByWorkoutRadioButton.selectedProperty().get());
+        displayLoggedHistory();
     }
 
     private ArrayList<Exercise> exercisesNamesQuery(){
@@ -216,7 +216,6 @@ public class historyController {
         } catch (Exception e){
             e.printStackTrace();
         }
-        System.out.println(results);
         return results;
     }
 
