@@ -1,7 +1,6 @@
 package exerciseLogging;
 
 
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -10,7 +9,15 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 
+import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
+
 public class templatesController {
+
+    private final String URL = "jdbc:mysql://" + System.getenv("IP") + ":" + System.getenv("PORT") + "/" + System.getenv("DBNAME") + "?useSSL=false";
+    private final String username = System.getenv("USERNAME");
+    private final String password = System.getenv("PASSWORD");
 
     @FXML
     private TextField descField;
@@ -32,20 +39,69 @@ public class templatesController {
 
     private ObservableList<Exercise> exerciseList = FXCollections.observableArrayList();
     private ObservableList<Exercise> chosenExercises = FXCollections.observableArrayList();
+    private ObservableList<Template> templates = FXCollections.observableArrayList();
+
+    private Map<Integer, Exercise> exerciseMap = new HashMap<>();
+    private Map<Integer, Template> templateMap = new HashMap<>();
 
     @FXML
     private void initialize() {
 
-        // Random test exercises
-        for (int i = 0; i < 3; i++) {
-            exerciseList.add(new Exercise(i, "Exercise" + i, "lolol"));
-        }
+        loadExercises();
+        loadTemplates();
 
         exercises.setItems(exerciseList);
         selectedExercises.setItems(chosenExercises);
+        templateList.setItems(templates);
 
         exercises.setOnMousePressed(selectExercise);
         selectedExercises.setOnMousePressed(removeExercise);
+    }
+
+    private void loadExercises() {
+        try {
+            Connection conn = DriverManager.getConnection(URL, username, password);
+            Statement s = conn.createStatement();
+            if (s.execute("SELECT * FROM Exercise")) {
+                ResultSet results = s.getResultSet();
+                while (results.next()) {
+
+                    int id = results.getInt("id");
+                    exerciseMap.put(id, new Exercise(id, results.getString("name"), results.getString("description")));
+
+                    exerciseList.add(new Exercise(results.getInt("id"), results.getString("name"), results.getString("description")));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadTemplates() {
+        try {
+            Connection conn = DriverManager.getConnection(URL, username, password);
+            Statement s = conn.createStatement();
+            if (s.execute("SELECT * FROM Template AS T JOIN TemplateExercise AS TE ON T.id = TE.template_id JOIN Exercise AS E ON E.id = TE.exercise_id")) {
+                ResultSet results = s.getResultSet();
+                while(results.next()) {
+                    int templateId = results.getInt("T.id");
+                    Template template = templateMap.get(templateId);
+                    if (template == null) {
+                        template = new Template(templateId, results.getString("T.name"), results.getString("T.description"));
+                    }
+
+                    int exerciseId = results.getInt("E.id");
+                    Exercise exercise = exerciseMap.get(exerciseId);
+                    if (exercise == null)
+                        continue;
+
+                    template.addExercise(exercise);
+
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private EventHandler<? super MouseEvent> selectExercise = (e) -> {
