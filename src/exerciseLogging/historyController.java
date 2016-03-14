@@ -254,7 +254,7 @@ public class historyController {
         ArrayList<Goal> goals = new ArrayList<>();
         try{
             Connection myConnection = DriverManager.getConnection(URL, username, password);
-            PreparedStatement myStatement = myConnection.prepareStatement("select distinct g.goal_number, g.reps, g.sets, g.distance, g.duration, g.exercise_id, g.weight, g.created, g.achieved from Goal as g join Exercise as e on g.exercise_id = e.id join TemplateExercise as te on e.id = te.exercise_id join Template as t on te.template_id = ?");
+            PreparedStatement myStatement = myConnection.prepareStatement("select distinct g.reps, g.sets, g.distance, g.duration, g.exercise_id, g.weight, g.created, g.achieved from Goal as g join Exercise as e on g.exercise_id = e.id join TemplateExercise as te on e.id = te.exercise_id join Template as t on te.template_id = ?");
             myStatement.setString(1, String.valueOf(temp_id));
             ResultSet myResultSet = myStatement.executeQuery();
             while (myResultSet.next()){
