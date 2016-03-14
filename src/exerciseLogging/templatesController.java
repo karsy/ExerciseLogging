@@ -191,7 +191,27 @@ public class templatesController {
     }
 
     private void updateTemplate(Template template) {
-        
+        try {
+            Connection conn = DriverManager.getConnection(URL, username, password);
+            PreparedStatement statement = conn.prepareStatement("UPDATE Templates SET name = ?, description = ? WHERE id = " + template.getId());
+            statement.setString(1, template.getName());
+            statement.setString(2, template.getDescription());
+            statement.executeUpdate();
+
+            PreparedStatement deleteStatement = conn.prepareStatement("DELETE FROM TemplateExercise WHERE id = ?");
+            deleteStatement.setInt(1, template.getId());
+            deleteStatement.executeUpdate();
+
+            for (Exercise exercise : template.getExercises()) {
+                PreparedStatement insertStatement = conn.prepareStatement("INSERT INTO TemplateExercise VALUES(?, ?)");
+                insertStatement.setInt(1, template.getId());
+                insertStatement.setInt(2, exercise.getId());
+                insertStatement.executeUpdate();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private int saveNewTemplate(Template template) {
