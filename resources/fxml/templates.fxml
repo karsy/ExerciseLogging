@@ -15,7 +15,8 @@
                <TextField fx:id="descField" layoutX="121.0" layoutY="54.0" />
                <ListView fx:id="templateListView" layoutX="279.0" layoutY="28.0" prefHeight="210.0" prefWidth="190.0" />
                <Button fx:id="saveButton" layoutX="322.0" layoutY="252.0" mnemonicParsing="false" onAction="#saveTemplate" text="Save changes" />
-               <Button fx:id="newButton" layoutX="200.0" layoutY="252.0" mnemonicParsing="false" onAction="#newTemplate" text="New template" />
+               <Button fx:id="newButton" layoutX="90.0" layoutY="252.0" mnemonicParsing="false" onAction="#newTemplate" text="New template" />
+               <Button fx:id="deleteButton" layoutX="200.0" layoutY="252.0" mnemonicParsing="false" onAction="#deleteTemplate" text="Delete template" />
                <ListView fx:id="exerciseListView" layoutX="155.0" layoutY="122.0" prefHeight="115.0" prefWidth="115.0" />
                <ListView fx:id="selectedListView" layoutX="14.0" layoutY="122.0" prefHeight="115.0" prefWidth="115.0" />
                <Text fill="WHITE" layoutX="23.0" layoutY="105.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Selected:" />

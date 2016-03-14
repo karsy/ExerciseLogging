@@ -25,9 +25,6 @@ public class templatesController {
     private TextField nameField;
 
     @FXML
-    private Button saveButton;
-
-    @FXML
     private ListView<Exercise> exerciseListView;
 
     @FXML
@@ -119,7 +116,7 @@ public class templatesController {
 
     private void selectExercise() {
         int index = exerciseListView.getSelectionModel().getSelectedIndex();
-        if (index == -1) {
+        if (index == -1 || currentTemplate == null) {
             return;
         }
         Exercise chosen = exercises.get(index);
@@ -132,7 +129,7 @@ public class templatesController {
 
     private void removeExercise() {
         int index = selectedListView.getSelectionModel().getSelectedIndex();
-        if (index == -1) {
+        if (index == -1 || currentTemplate == null) {
             return;
         }
         Exercise chosen = chosenExercises.get(index);
@@ -149,7 +146,8 @@ public class templatesController {
             return;
         }
 
-        saveTemplate(null);
+        if (currentTemplate != null)
+            saveTemplate(null);
 
         currentTemplate = templates.get(index);
 
@@ -179,17 +177,97 @@ public class templatesController {
     }
 
     public void storeTemplates() {
+        for (Template template: templates) {
+            if (template.getId() != -1) {
+                updateTemplate(template);
+            } else {
+                int newId = saveNewTemplate(template);
+                template.setId(newId);
+            }
+        }
+    }
 
+    private void updateTemplate(Template template) {
+        try {
+            Connection conn = DriverManager.getConnection(URL, username, password);
+            PreparedStatement statement = conn.prepareStatement("UPDATE Template SET name = ?, description = ? WHERE id = " + template.getId());
+            statement.setString(1, template.getName());
+            statement.setString(2, template.getDescription());
+            statement.executeUpdate();
+
+            PreparedStatement deleteStatement = conn.prepareStatement("DELETE FROM TemplateExercise WHERE id = ?");
+            deleteStatement.setInt(1, template.getId());
+            deleteStatement.executeUpdate();
+
+            for (Exercise exercise : template.getExercises()) {
+                PreparedStatement insertStatement = conn.prepareStatement("INSERT INTO TemplateExercise VALUES(?, ?)");
+                insertStatement.setInt(1, template.getId());
+                insertStatement.setInt(2, exercise.getId());
+                insertStatement.executeUpdate();
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private int saveNewTemplate(Template template) {
+        int templateId = -1;
+        try{
+            Connection myConnection = DriverManager.getConnection(URL, username, password);
+            PreparedStatement myStatement = myConnection.prepareStatement("INSERT INTO Template VALUES(?, ?)", Statement.RETURN_GENERATED_KEYS);
+            myStatement.setString(1, template.getName());
+            myStatement.setString(2, template.getDescription());
+            myStatement.executeUpdate();
+            ResultSet rs = myStatement.getGeneratedKeys();
+            if (rs.next()) {
+                templateId = rs.getInt(1);
+            }
+
+            for (Exercise exercise : template.getExercises()) {
+                PreparedStatement myStatement2 = myConnection.prepareStatement("INSERT INTO TemplateExercise VALUES(?, ?)");
+                myStatement2.setInt(1, templateId);
+                myStatement2.setInt(2, exercise.getId());
+                myStatement2.execute();
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return templateId;
     }
 
     public void newTemplate(ActionEvent actionEvent) {
-        saveTemplate(null);
+        if (currentTemplate != null)
+            saveTemplate(null);
 
-        currentTemplate = new Template(-1, "New template", "New template");
+        currentTemplate = new Template(-1, "Name", "Description");
         nameField.setText(currentTemplate.getName());
         descField.setText(currentTemplate.getDescription());
         resetExercises();
         templates.add(currentTemplate);
+    }
+
+    public void deleteTemplate(ActionEvent actionEvent) {
+        if (currentTemplate.getId() != -1) {
+            try {
+                Connection conn = DriverManager.getConnection(URL, username, password);
+                PreparedStatement deleteStatement = conn.prepareStatement("DELETE FROM Template WHERE id = ?");
+                deleteStatement.setInt(1, currentTemplate.getId());
+                deleteStatement.executeUpdate();
+
+                PreparedStatement statement = conn.prepareStatement("DELETE FROM TemplateExercise WHERE template_id = ?");
+                statement.setInt(1, currentTemplate.getId());
+                statement.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        templates.remove(currentTemplate);
+        templateListView.getSelectionModel().select(1);
+        selectTemplate();
+        
     }
 
     private void resetExercises() {
