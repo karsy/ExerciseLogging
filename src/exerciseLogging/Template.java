@@ -1,7 +1,7 @@
 package exerciseLogging;
 
 
-public class Template {
+public class Template{
 
     private final int id;
     private final String name, description;
@@ -22,5 +22,9 @@ public class Template {
 
     public String getName() {
         return name;
+    }
+
+    public String toString(){
+        return this.name;
     }
 }
