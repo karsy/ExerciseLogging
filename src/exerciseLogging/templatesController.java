@@ -25,9 +25,6 @@ public class templatesController {
     private TextField nameField;
 
     @FXML
-    private Button saveButton;
-
-    @FXML
     private ListView<Exercise> exerciseListView;
 
     @FXML
@@ -193,7 +190,7 @@ public class templatesController {
     private void updateTemplate(Template template) {
         try {
             Connection conn = DriverManager.getConnection(URL, username, password);
-            PreparedStatement statement = conn.prepareStatement("UPDATE Templates SET name = ?, description = ? WHERE id = " + template.getId());
+            PreparedStatement statement = conn.prepareStatement("UPDATE Template SET name = ?, description = ? WHERE id = " + template.getId());
             statement.setString(1, template.getName());
             statement.setString(2, template.getDescription());
             statement.executeUpdate();
@@ -249,6 +246,28 @@ public class templatesController {
         descField.setText(currentTemplate.getDescription());
         resetExercises();
         templates.add(currentTemplate);
+    }
+
+    public void deleteTemplate(ActionEvent actionEvent) {
+        if (currentTemplate.getId() != -1) {
+            try {
+                Connection conn = DriverManager.getConnection(URL, username, password);
+                PreparedStatement deleteStatement = conn.prepareStatement("DELETE FROM Template WHERE id = ?");
+                deleteStatement.setInt(1, currentTemplate.getId());
+                deleteStatement.executeUpdate();
+
+                PreparedStatement statement = conn.prepareStatement("DELETE FROM TemplateExercise WHERE template_id = ?");
+                statement.setInt(1, currentTemplate.getId());
+                statement.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        templates.remove(currentTemplate);
+        templateListView.getSelectionModel().select(1);
+        selectTemplate();
+        
     }
 
     private void resetExercises() {
