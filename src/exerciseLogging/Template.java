@@ -5,7 +5,7 @@ import java.util.Set;
 
 public class Template{
 
-    private final int id;
+    private int id;
     private String name, description;
     private Set<Exercise> exercises;
     private boolean updated = false;
@@ -38,6 +38,10 @@ public class Template{
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getDescription() {

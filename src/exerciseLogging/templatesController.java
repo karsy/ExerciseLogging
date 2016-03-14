@@ -119,7 +119,7 @@ public class templatesController {
 
     private void selectExercise() {
         int index = exerciseListView.getSelectionModel().getSelectedIndex();
-        if (index == -1) {
+        if (index == -1 || currentTemplate == null) {
             return;
         }
         Exercise chosen = exercises.get(index);
@@ -132,7 +132,7 @@ public class templatesController {
 
     private void removeExercise() {
         int index = selectedListView.getSelectionModel().getSelectedIndex();
-        if (index == -1) {
+        if (index == -1 || currentTemplate == null) {
             return;
         }
         Exercise chosen = chosenExercises.get(index);
@@ -149,7 +149,8 @@ public class templatesController {
             return;
         }
 
-        saveTemplate(null);
+        if (currentTemplate != null)
+            saveTemplate(null);
 
         currentTemplate = templates.get(index);
 
@@ -179,13 +180,51 @@ public class templatesController {
     }
 
     public void storeTemplates() {
+        for (Template template: templates) {
+            if (template.getId() != -1) {
+                updateTemplate(template);
+            } else {
+                int newId = saveNewTemplate(template);
+                template.setId(newId);
+            }
+        }
+    }
 
+    private void updateTemplate(Template template) {
+        
+    }
+
+    private int saveNewTemplate(Template template) {
+        int templateId = -1;
+        try{
+            Connection myConnection = DriverManager.getConnection(URL, username, password);
+            PreparedStatement myStatement = myConnection.prepareStatement("INSERT INTO Template VALUES(?, ?)", Statement.RETURN_GENERATED_KEYS);
+            myStatement.setString(1, template.getName());
+            myStatement.setString(2, template.getDescription());
+            myStatement.executeUpdate();
+            ResultSet rs = myStatement.getGeneratedKeys();
+            if (rs.next()) {
+                templateId = rs.getInt(1);
+            }
+
+            for (Exercise exercise : template.getExercises()) {
+                PreparedStatement myStatement2 = myConnection.prepareStatement("INSERT INTO TemplateExercise VALUES(?, ?)");
+                myStatement2.setInt(1, templateId);
+                myStatement2.setInt(2, exercise.getId());
+                myStatement2.execute();
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return templateId;
     }
 
     public void newTemplate(ActionEvent actionEvent) {
-        saveTemplate(null);
+        if (currentTemplate != null)
+            saveTemplate(null);
 
-        currentTemplate = new Template(-1, "New template", "New template");
+        currentTemplate = new Template(-1, "Name", "Description");
         nameField.setText(currentTemplate.getName());
         descField.setText(currentTemplate.getDescription());
         resetExercises();
