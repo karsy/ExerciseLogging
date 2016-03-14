@@ -4,14 +4,13 @@ package exerciseLogging;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class templatesController {
 
@@ -29,20 +28,22 @@ public class templatesController {
     private Button saveButton;
 
     @FXML
-    private ListView<Exercise> exercises;
+    private ListView<Exercise> exerciseListView;
 
     @FXML
-    private ListView<Exercise> selectedExercises;
+    private ListView<Exercise> selectedListView;
 
     @FXML
-    private ListView<Template> templateList;
+    private ListView<Template> templateListView;
 
-    private ObservableList<Exercise> exerciseList = FXCollections.observableArrayList();
+    private ObservableList<Exercise> exercises = FXCollections.observableArrayList();
     private ObservableList<Exercise> chosenExercises = FXCollections.observableArrayList();
     private ObservableList<Template> templates = FXCollections.observableArrayList();
 
     private Map<Integer, Exercise> exerciseMap = new HashMap<>();
     private Map<Integer, Template> templateMap = new HashMap<>();
+
+    private Template currentTemplate;
 
     @FXML
     private void initialize() {
@@ -50,12 +51,27 @@ public class templatesController {
         loadExercises();
         loadTemplates();
 
-        exercises.setItems(exerciseList);
-        selectedExercises.setItems(chosenExercises);
-        templateList.setItems(templates);
+        exerciseListView.setItems(exercises);
+        selectedListView.setItems(chosenExercises);
+        templateListView.setItems(templates);
 
-        exercises.setOnMousePressed(selectExercise);
-        selectedExercises.setOnMousePressed(removeExercise);
+        exerciseListView.setOnMousePressed(event -> selectExercise());
+        selectedListView.setOnMousePressed(event -> removeExercise());
+        templateListView.setOnMousePressed(event -> selectTemplate());
+
+        templates.addAll(templateMap.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toList()));
+        exercises.addAll(exerciseMap.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toList()));
+
+        nameField.textProperty().addListener((observable, oldValue, newValue) -> {
+            currentTemplate.setName(newValue);
+            templateListView.setItems(null);
+            templateListView.setItems(templates);
+        });
+        descField.textProperty().addListener((observable, oldValue, newValue) -> {
+            currentTemplate.setDescription(newValue);
+            templateListView.setItems(null);
+            templateListView.setItems(templates);
+        });
     }
 
     private void loadExercises() {
@@ -65,11 +81,8 @@ public class templatesController {
             if (s.execute("SELECT * FROM Exercise")) {
                 ResultSet results = s.getResultSet();
                 while (results.next()) {
-
                     int id = results.getInt("id");
                     exerciseMap.put(id, new Exercise(id, results.getString("name"), results.getString("description")));
-
-                    exerciseList.add(new Exercise(results.getInt("id"), results.getString("name"), results.getString("description")));
                 }
             }
         } catch (SQLException e) {
@@ -96,7 +109,7 @@ public class templatesController {
                         continue;
 
                     template.addExercise(exercise);
-
+                    templateMap.put(templateId, template);
                 }
             }
         } catch (SQLException e) {
@@ -104,27 +117,85 @@ public class templatesController {
         }
     }
 
-    private EventHandler<? super MouseEvent> selectExercise = (e) -> {
-        int index = exercises.getSelectionModel().getSelectedIndex();
-        Exercise chosen = exerciseList.get(index);
-        exerciseList.remove(index);
+    private void selectExercise() {
+        int index = exerciseListView.getSelectionModel().getSelectedIndex();
+        if (index == -1) {
+            return;
+        }
+        Exercise chosen = exercises.get(index);
+        exercises.remove(index);
         chosenExercises.add(chosen);
-        exercises.getSelectionModel().clearSelection();
-    };
+        exerciseListView.getSelectionModel().clearSelection();
 
-    private EventHandler<? super MouseEvent> removeExercise = (e) -> {
-        int index = selectedExercises.getSelectionModel().getSelectedIndex();
+        currentTemplate.addExercise(chosen);
+    }
+
+    private void removeExercise() {
+        int index = selectedListView.getSelectionModel().getSelectedIndex();
+        if (index == -1) {
+            return;
+        }
         Exercise chosen = chosenExercises.get(index);
-        exerciseList.add(chosen);
+        exercises.add(chosen);
         chosenExercises.remove(index);
-        selectedExercises.getSelectionModel().clearSelection();
-    };
+        selectedListView.getSelectionModel().clearSelection();
+
+        currentTemplate.removeExercise(chosen);
+    }
+
+    private void selectTemplate() {
+        int index = templateListView.getSelectionModel().getSelectedIndex();
+        if (index == -1) {
+            return;
+        }
+
+        saveTemplate(null);
+
+        currentTemplate = templates.get(index);
+
+        nameField.setText(currentTemplate.getName());
+        descField.setText(currentTemplate.getDescription());
+
+        resetExercises();
+
+        for (Exercise exercise : currentTemplate.getExercises()) {
+            int exerciseIndex = exercises.indexOf(exercise);
+            exerciseListView.getSelectionModel().select(exerciseIndex);
+            selectExercise();
+        }
+    }
 
     @FXML
     private void saveTemplate(ActionEvent event) {
         String description = descField.getText();
         String name = nameField.getText();
+
+        currentTemplate.setName(name);
+        currentTemplate.setDescription(description);
+
+        if (event != null) {
+            storeTemplates();
+        }
     }
 
-    
+    public void storeTemplates() {
+
+    }
+
+    public void newTemplate(ActionEvent actionEvent) {
+        saveTemplate(null);
+
+        currentTemplate = new Template(-1, "New template", "New template");
+        nameField.setText(currentTemplate.getName());
+        descField.setText(currentTemplate.getDescription());
+        resetExercises();
+        templates.add(currentTemplate);
+    }
+
+    private void resetExercises() {
+        while (chosenExercises.size() > 0) {
+            selectedListView.getSelectionModel().select(0);
+            removeExercise();
+        }
+    }
 }

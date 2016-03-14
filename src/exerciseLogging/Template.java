@@ -8,6 +8,7 @@ public class Template{
     private final int id;
     private String name, description;
     private Set<Exercise> exercises;
+    private boolean updated = false;
 
     public Template(int id, String name, String description) {
         this.id = id;
@@ -31,6 +32,10 @@ public class Template{
         exercises.remove(exercise);
     }
 
+    public Set<Exercise> getExercises() {
+        return exercises;
+    }
+
     public int getId() {
         return id;
     }
@@ -49,6 +54,14 @@ public class Template{
 
     public String getName() {
         return name;
+    }
+
+    public boolean isUpdated() {
+        return updated;
+    }
+
+    public void setUpdated(boolean updated) {
+        this.updated = updated;
     }
 
     public String toString(){
