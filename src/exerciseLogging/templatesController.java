@@ -178,6 +178,9 @@ public class templatesController {
 
     public void storeTemplates() {
         for (Template template: templates) {
+            if (template.getExercises().size() == 0){
+                continue;
+            }
             if (template.getId() != -1) {
                 updateTemplate(template);
             } else {
@@ -195,7 +198,7 @@ public class templatesController {
             statement.setString(2, template.getDescription());
             statement.executeUpdate();
 
-            PreparedStatement deleteStatement = conn.prepareStatement("DELETE FROM TemplateExercise WHERE id = ?");
+            PreparedStatement deleteStatement = conn.prepareStatement("DELETE FROM TemplateExercise WHERE template_id = ?");
             deleteStatement.setInt(1, template.getId());
             deleteStatement.executeUpdate();
 
@@ -215,7 +218,7 @@ public class templatesController {
         int templateId = -1;
         try{
             Connection myConnection = DriverManager.getConnection(URL, username, password);
-            PreparedStatement myStatement = myConnection.prepareStatement("INSERT INTO Template VALUES(?, ?)", Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement myStatement = myConnection.prepareStatement("INSERT INTO Template (name, description) VALUES(?, ?)", Statement.RETURN_GENERATED_KEYS);
             myStatement.setString(1, template.getName());
             myStatement.setString(2, template.getDescription());
             myStatement.executeUpdate();
