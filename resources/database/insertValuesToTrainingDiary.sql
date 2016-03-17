@@ -27,12 +27,6 @@ VALUES (2, "Decent", 5);
 INSERT INTO outdoor
 VALUES (2, "Sunny, hot", 30);
 
-INSERT INTO indoor
-VALUES (1, "void", 0);
-
-INSERT INTO outdoor
-VALUES (1, "void", 0);
-
 INSERT INTO conditiontype
 VALUES (1, 2, 2), (2, 2, 2);
 

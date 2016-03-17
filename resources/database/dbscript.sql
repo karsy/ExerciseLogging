@@ -119,3 +119,9 @@ CREATE TABLE IF NOT EXISTS Result(
     FOREIGN KEY(workout_id) REFERENCES Workout(time_of_exercise),
     FOREIGN KEY(exercise_id) REFERENCES Exercise(id)
 );
+
+INSERT INTO indoor
+VALUES (1, "void", 0);
+
+INSERT INTO outdoor
+VALUES (1, "void", 0);
