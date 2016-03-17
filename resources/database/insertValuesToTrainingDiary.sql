@@ -22,13 +22,19 @@ VALUES (100.0, 5, 5, null, null, "2016-03-02", "2016-03-07", 1),
 (140.0, 5, 5, null, null, "2016-03-07", null, 1);
 
 INSERT INTO indoor
-VALUES (1, "Decent", 5);
+VALUES (2, "Decent", 5);
 
 INSERT INTO outdoor
-VALUES (1, "Sunny, hot", 30);
+VALUES (2, "Sunny, hot", 30);
+
+INSERT INTO indoor
+VALUES (1, "void", 0);
+
+INSERT INTO outdoor
+VALUES (1, "void", 0);
 
 INSERT INTO conditiontype
-VALUES (1, 1, 1), (2, 1, 1);
+VALUES (1, 2, 2), (2, 2, 2);
 
 INSERT INTO template
 VALUES (1, "Full Body Strength", "A 5x5 Strength workout."), (2, "Jog", "A template for jogging.");
