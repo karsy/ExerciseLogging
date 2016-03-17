@@ -1,3 +1,4 @@
+use TrainingDiary;
 INSERT INTO exercise
 VALUES (1, "Squat", "Put a barbell on your back, and squat down and back up again."),
 (2, "Deadlift", "Lift a barbell up from the ground."),
