@@ -14,9 +14,9 @@ import java.util.stream.Collectors;
 
 public class templatesController {
 
-    private final String URL = "jdbc:mysql://" + System.getenv("IP") + ":" + System.getenv("PORT") + "/" + System.getenv("DBNAME") + "?useSSL=false";
-    private final String username = System.getenv("USERNAME");
-    private final String password = System.getenv("PASSWORD");
+    private String URL = "jdbc:mysql://localhost:3306/trainingdiary?useSSL=false";
+    private String username = "user";
+    private String password = "user";
 
     @FXML
     private TextField descField;

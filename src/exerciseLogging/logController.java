@@ -21,9 +21,10 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class logController {
-    private String URL = "jdbc:mysql://" + System.getenv("IP") + ":" + System.getenv("PORT") + "/" + System.getenv("DBNAME") + "?useSSL=false";
-    private String username = System.getenv("USERNAME");
-    private String password = System.getenv("PASSWORD");
+
+    private String URL = "jdbc:mysql://localhost:3306/trainingdiary?useSSL=false";
+    private String username = "user";
+    private String password = "user";
 
     private ObservableList<String> templates = FXCollections.observableArrayList();
     private Map<String, Integer> templatesIdNameMap = new HashMap<>();

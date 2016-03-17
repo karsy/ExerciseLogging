@@ -15,9 +15,9 @@ import java.util.ArrayList;
 
 public class historyController {
 
-    private String URL = "jdbc:mysql://" + System.getenv("IP") + ":" + System.getenv("PORT") + "/" + System.getenv("DBNAME") + "?useSSL=false";
-    private String username = System.getenv("USERNAME");
-    private String password = System.getenv("PASSWORD");
+    private String URL = "jdbc:mysql://localhost:3306/trainingdiary?useSSL=false";
+    private String username = "user";
+    private String password = "user";
 
     ArrayList<Exercise> exercises = new ArrayList<>(exercisesNamesQuery());
     ArrayList<Template> workouts = new ArrayList<>(workoutTemplateQuery());
